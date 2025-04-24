@@ -1,6 +1,6 @@
 with Ada.Text_IO; use Ada.Text_IO;
-with Luxury_Vehicle;
-with Sensor_System;
+with Luxury_Vehicle, Standard_Vehicle, Sensor_System, Radar_Systems;
+
 
 procedure Main is
    L : Luxury_Vehicle.Luxury_Car;

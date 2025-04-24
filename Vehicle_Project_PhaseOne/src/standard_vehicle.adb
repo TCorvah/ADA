@@ -1,27 +1,32 @@
 with Ada.Text_IO; use Ada.Text_IO;
-with Sensor_System, Vehicle_Systems;
+with Sensor_System, Vehicle_System;
 
 package body Standard_Vehicle is 
 
 
-procedure SeatBelt_Warning(V : in out  Standard) is
-begin
-  Sensor_System.Activate(V.Sensors);
-   Sensor_System.Check_Seat(V.Sensors);
-   if Sensor_System.Seat_Occupied (V.Sensors) and then not V.Sensors.Seatbelt_On then 
-      Put_Line(" seatbelt is not on");
-   end if;  
-end SeatBelt_Warning;
+   procedure SeatBelt_Warning(V : in out  Standard) is
+   begin
+      Vehicle_System.Start_Engine(Vehicle_System.Vehicle(V));
+      Sensor_System.Activate_Sensor(V.Car_Sensor);
+      Sensor_System.Check_Seat(V.Car_Sensor);
+      if Sensor_System.Is_Door_Open(V.Car_Sensor) then
+         Put_Line(" Door is open");
+      else
+         Put_Line(" Door is closed");
+      end if;
+      if Sensor_System.Seat_Occupied (V.Car_Sensor) and then not V.Car_Sensor.Seatbelt_On then 
+         Put_Line(" seatbelt is not on");
+      end if;  
+   end SeatBelt_Warning;
 
-procedure Check_Sensors(V : in Standard) is   
-begin
-   Sensor_System.Activate_Sensor(V.Sensors);
-   if Sensor_System.Is_Door_Open(V.Sensors) then
-      Put_Line(" Door is open");
-   else
-       Put_Line(" Door is closed");
-   end if;
-   Sensor_System.Check_Seat(V.Sensors);
-end Check_Sensors;
+   procedure Check_Sensors(V : in out Standard) is   
+   begin
+      Sensor_System.Activate_Sensor(V.Car_Sensor);
+      if Sensor_System.Is_Door_Open(V.Car_Sensor) then
+         Put_Line(" Door is open");
+      else
+         Put_Line(" Door is closed");
+      end if;
+   end Check_Sensors;
 
 end Standard_Vehicle;
