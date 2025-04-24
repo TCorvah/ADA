@@ -1,0 +1,86 @@
+with Ada.Text_IO; use Ada.Text_IO;
+
+package body Sensor_System is
+   
+   procedure Activate_Sensor(S : in out Sensor) is
+   begin
+      S.Status := Sensor_System.On;
+   end Activate_Sensor;
+
+   procedure Deactivate_Sensor(S : in out Sensor) is
+   begin
+      S.Status := Sensor_System.Off;
+   end Deactivate_Sensor;
+
+   function Is_Door_Open(S : in Sensor) return  Boolean is
+   begin
+      return S.Door_Open;
+   end Is_Door_Open;
+
+   function Seat_Occupied(S : Sensor) return Boolean is
+   begin
+      return S.Detected_Weight > 20.0; -- payload threshold for seatbelt warning is 20kg
+   end Seat_Occupied;
+
+   procedure Toggle_Door(S : in out Sensor) is
+   begin
+      S.Door_Open := not S.Door_Open;
+      if S.Door_Open then
+         Put_Line ("Vehicle door is open" );
+      else
+         Put_Line ("Vehicle door is now close");
+      end if;
+   end Toggle_Door;
+
+   
+   procedure Check_Seatbelt(S : in Sensor) is 
+   begin
+      if S.Seatbelt_On then
+         Put_Line ("Sensor: Seatbelt is fastened");
+      else
+          Put_Line ("Sensor: Seatbelt is not  fastened");
+      end if;
+   end Check_Seatbelt;
+
+
+   procedure Check_Seat(S : in Sensor) is
+   begin
+      if Seat_Occupied (S) then
+         Put_Line ("Sensor: Seat is occupied (weight: " & Float 'Image(S.Detected_Weight) & "kg).");
+         Check_Seatbelt (S);
+      else
+         Put_Line ("Sensor: Seat is empty.");
+      end if;
+   end Check_Seat;
+
+   procedure Check_Visibility(S : in out Sensor) is
+   begin
+      if S.Visibility < 0.5 then 
+         S.Headlights_On := True;
+         Put_Line("Sensor: Headlights turned ON due to low light.");
+      else
+         S.Headlights_On := False;
+         Put_Line("Sensor: Headlights OFF.");
+      end if;
+   end Check_Visibility;
+
+
+   function Should_Turn_On_Headlights(S : in Sensor) return Boolean is
+   begin
+      return S.Visibility < 0.5;
+   end Should_Turn_On_Headlights;
+
+
+   procedure Update_Headlights(S : in out Sensor) is 
+   begin
+      if Should_Turn_On_Headlights(S) then
+         S.Headlights_On := True;
+         Put_Line("Sensor: Headlights turned ON due to low light.");
+      else
+         S.Headlights_On := False;
+         Put_Line("Headlights turn Off; visibility is suficient.");
+      end if;
+   end Update_Headlights;
+
+
+end Sensor_System;
