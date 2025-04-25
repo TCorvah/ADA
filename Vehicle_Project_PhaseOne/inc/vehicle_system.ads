@@ -1,12 +1,15 @@
 package Vehicle_System is
-   
+
+   type Door_Status_Type is (Door_Closed,Door_Open); 
    type Vehicle is abstract tagged record
       Engine_On : Boolean := False;
       Is_Reserved : Boolean := False;
       Is_Moving : Boolean := False;
       Number_Of_Doors : Integer;
+      Doors_Closed : Boolean := True;
       MPG : Float := 0.0;
       Speed : Float := 0.0;
+      Current_Door_Status : Door_Status_Type := Door_Closed;
    end record;
   
    -- Procedures to control the Engine
@@ -15,7 +18,8 @@ package Vehicle_System is
    procedure Set_Speed(V : in out Vehicle; New_Speed : Float);
 
    -- Procedures to control the movement
-   procedure Vehicle_Mobile (V : in out Vehicle);
+   function Vehicle_Mobile (V : in out Vehicle) return Boolean is abstract;
+   function is_Door_Closed(V : in out Vehicle) return Boolean is abstract;
    procedure Vehicle_NotMobile (V : in out Vehicle);
 
    -- Procedures to reserve the vehicle

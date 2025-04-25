@@ -1,6 +1,6 @@
 package Sensor_System is
 
- type Sensor_Status is (Off, On);
+   type Sensor_Status is (Off, On);
 
 -- Sensor has two states and will be use for standard and luxury cars
    type Sensor is tagged record
@@ -13,16 +13,16 @@ package Sensor_System is
    end record;
 
 
--- Procedure 
-procedure Activate_Sensor(S : in out Sensor);
-procedure Deactivate_Sensor(S : in out Sensor);
-function  Is_Door_Open (S :in Sensor) return  Boolean;
-function Seat_Occupied(S : in Sensor) return Boolean;
-function Should_Turn_On_Headlights(S : in Sensor) return Boolean;
-procedure Toggle_Door(S : in out Sensor);
-procedure Check_Seatbelt(S : Sensor);
-procedure Check_Seat(S : Sensor);
-procedure Check_Visibility(S : in out Sensor);
-procedure Update_Headlights(S : in out Sensor);
+   -- Procedure 
+   procedure Activate_Sensor(S : in out Sensor);
+   procedure Deactivate_Sensor(S : in out Sensor);
+   function  Is_Door_Open (S :in Sensor) return  Boolean;
+   function Seat_Occupied(S : in Sensor) return Boolean;
+   function Should_Turn_On_Headlights(S : in Sensor) return Boolean;
+   procedure Toggle_Door(S : in out Sensor);
+   procedure Check_Seatbelt(S : Sensor);
+   procedure Check_Seat(S : Sensor);
+   procedure Check_Visibility(S : in out Sensor);
+   procedure Update_Headlights(S : in out Sensor);
 
 end Sensor_System;

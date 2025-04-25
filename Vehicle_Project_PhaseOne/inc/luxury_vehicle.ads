@@ -1,13 +1,13 @@
 with Radar_Systems, Sensor_System, Vehicle_System;
 
+
 package Luxury_Vehicle is
-   type Door_Status is (Close, Open);
+
 
    -- Luxury Vehicle Type (Extends the base class)
    type Luxury_Car is new Vehicle_System.Vehicle with record
       Car_Sensor : Sensor_System.Sensor;
       Car_Radar : Radar_Systems.Radar;
-      Doors : Door_Status := Close;
    end record;
 
 
@@ -40,9 +40,10 @@ package Luxury_Vehicle is
 
 
    
-   function Doors_Closed(Lux_Car : in Luxury_Car) return Boolean;
+   function is_Door_Closed(Lux_Car : in out Luxury_Car) return Boolean;
    procedure Attempt_Move(Lux_Car : in out Luxury_Car);
-   overriding procedure Vehicle_Mobile(Lux_Car : in out Luxury_Car);
+
+   overriding function Vehicle_Mobile(Lux_Car : in out Luxury_Car) return Boolean;
 
 
 end Luxury_Vehicle;
