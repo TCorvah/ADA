@@ -1,5 +1,6 @@
 with Ada.Text_IO; use Ada.Text_IO;
 with Sensor_System, Vehicle_System;
+use Vehicle_System;
 
 package body Standard_Vehicle is 
 
@@ -28,5 +29,18 @@ package body Standard_Vehicle is
          Put_Line(" Door is closed");
       end if;
    end Check_Sensors;
+
+   function Vehicle_Mobile(V : in out Standard) return Boolean is
+   begin
+     return V.Engine_On and V.Speed > 0.0;
+   end Vehicle_Mobile;
+
+   function is_Door_Closed(V : in out Standard) return Boolean is
+   begin
+      return V.Current_Door_Status = Vehicle_System.Door_Closed;
+   end is_Door_Closed;
+   
+   
+
 
 end Standard_Vehicle;

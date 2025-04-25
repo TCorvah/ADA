@@ -34,13 +34,7 @@ package body Vehicle_System is
       end if;
    end Set_Speed;
 
-   procedure Vehicle_Mobile(V : in out Vehicle) is
-   begin
-      if V.Speed > 0.0 then
-         V.Is_Moving := True;
-         Put_Line("Vehicle is in motion.");
-      end if;
-   end Vehicle_Mobile;
+
 
    function Reserve_Vehicle(V : Vehicle) return Boolean is
    begin
@@ -51,6 +45,8 @@ package body Vehicle_System is
    begin
       V.Is_Reserved := True;
    end Set_Reservation;
+
+
    
 
 end Vehicle_System;
