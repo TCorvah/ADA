@@ -1,3 +1,5 @@
+with Vehicle_System;
+use Vehicle_System;
 package Sensor_System is
 
    type Sensor_Status is (Off, On);
@@ -24,5 +26,6 @@ package Sensor_System is
    procedure Check_Seat(S : Sensor);
    procedure Check_Visibility(S : in out Sensor);
    procedure Update_Headlights(S : in out Sensor);
+   procedure Handle_Object_Detection(V : in out Vehicle_System.Vehicle; Current_Speed : in Float);
 
 end Sensor_System;
