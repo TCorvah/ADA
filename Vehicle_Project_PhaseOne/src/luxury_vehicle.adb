@@ -1,12 +1,7 @@
 with Ada.Text_IO; use Ada.Text_IO;
-with Luxury_Vehicle;
-with Radar_Systems;
-with Sensor_System;
-with Vehicle_System;
+with Luxury_Vehicle, Radar_Systems, Sensor_System, Vehicle_System;
 use Vehicle_System;
 package body  Luxury_Vehicle is
-
-
 
    function is_Door_Closed(Lux_Car : in out  Luxury_Car) return Boolean is
    begin
@@ -71,16 +66,17 @@ package body  Luxury_Vehicle is
    end Attempt_Move;
 
    
-   procedure Enable_Object_Detection(Lux_Car : in out Luxury_Car) is
-   Object_Threshold : constant Float := 2.0;
+   procedure Enable_Object_Detection(Lux_Car : in out Luxury_Car; Object_Threshold : in Float) is
+   Radars : Radar_Systems.Radar := Lux_Car.Car_Radar;
    begin
-      Radar_Systems.Detect_Object(Lux_Car.Car_Radar,Object_Threshold);
+      Radar_Systems.Detect_Object(Radars, Object_Threshold);
+      Lux_Car.Car_Radar := Radars;  
    end Enable_Object_Detection;
 
 
-   function Reduce_Speed(Lux_Car : in Luxury_Car; Current_Speed : in Integer) return Integer is
+   procedure Reduce_Speed(Lux_Car : in out Luxury_Car; Current_Speed : in Float) is
    begin
-      return Radar_Systems.Adjust_Speed(Lux_Car.Car_Radar,Current_Speed );
+      Sensor_System.Handle_Object_Detection(Vehicle_System.Vehicle(Lux_Car),Current_Speed );
    end Reduce_Speed;
 
 

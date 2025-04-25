@@ -15,7 +15,7 @@ package body Standard_Vehicle is
       else
          Put_Line(" Door is closed");
       end if;
-      if Sensor_System.Seat_Occupied (V.Car_Sensor) and then not V.Car_Sensor.Seatbelt_On then 
+      if Sensor_System.Seat_Occupied(V.Car_Sensor) and then not V.Car_Sensor.Seatbelt_On then 
          Put_Line(" seatbelt is not on");
       end if;  
    end SeatBelt_Warning;
