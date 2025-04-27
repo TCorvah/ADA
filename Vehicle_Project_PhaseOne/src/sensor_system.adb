@@ -7,11 +7,13 @@ package body Sensor_System is
    procedure Activate_Sensor(S : in out Sensor) is
    begin
       S.Status := Sensor_System.On;
+      Put_Line ("Sensor: Activated");
    end Activate_Sensor;
 
    procedure Deactivate_Sensor(S : in out Sensor) is
    begin
       S.Status := Sensor_System.Off;
+      Put_Line ("Sensor: Deactivated");
    end Deactivate_Sensor;
 
    function Is_Door_Open(S : in Sensor) return  Boolean is
@@ -59,13 +61,12 @@ package body Sensor_System is
    begin
       if S.Visibility < 0.5 then 
          S.Headlights_On := True;
-         Put_Line("Sensor: Headlights turned ON due to low light.");
+         Put_Line("Sensor: Headlights turned ON, Time of Day is night.");
       else
          S.Headlights_On := False;
-         Put_Line("Sensor: Headlights OFF.");
+         Put_Line("Sensor: Headlights OFF, daylight detected.");
       end if;
    end Check_Visibility;
-
 
    function Should_Turn_On_Headlights(S : in Sensor) return Boolean is
    begin
@@ -93,8 +94,10 @@ package body Sensor_System is
          Put_Line("Sensor: Object detected while vehicle is moving, SLOWING DOWN.");
       else
          Put_Line("Sensor: Object detected while vehicle is stationary.");
+         V.Is_Moving := False; -- Example: stop the vehicle if object detected
+         V.Set_Speed(0.0); -- Example: stop the vehicle if object detected
       end if;
-      Put_Line("Sensor: Object detected.");
+
       -- Implement logic to handle object detection
    end Handle_Object_Detection;
 

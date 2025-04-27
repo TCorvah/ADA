@@ -27,33 +27,49 @@ package body  Luxury_Vehicle is
    end Update_Door_Status;
 
 
-
    procedure Attempt_Move(Lux_Car : in out Luxury_Car) is
    Threshold : constant Float := 2.0;
    begin
+      Sensor_System.Toggle_Door(Lux_Car.Car_Sensor);
+      Sensor_System.Toggle_Door(Lux_Car.Car_Sensor); 
       -- Start the engine
       Vehicle_System.Start_Engine(Vehicle_System.Vehicle(Lux_Car));
    
-
       -- activate Sensor
       Sensor_System.Activate_Sensor(Lux_Car.Car_Sensor);   
-      -- activate radar
-      Radar_Systems.Activate_Radar(Lux_Car.Car_Radar);
 
       -- update door status
       Update_Door_Status(Lux_Car);
 
       -- check if all doors are close
       if is_Door_Closed(Lux_Car) then
+         -- check if the vehicle is occupied
+         if Sensor_System.Seat_Occupied(Lux_Car.Car_Sensor) then
+            Put_Line("Vehicle is occupied");
+         else
+            Put_Line("Vehicle is not occupied");
+         end if;
+         
+         -- check if visibility is good
+         Sensor_System.Check_Visibility(Lux_Car.Car_Sensor);
+      
 
       -- check if seatbelt fasten
-         Sensor_System.Check_Seatbelt(Lux_Car.Car_Sensor); 
-         Radar_Systems.Detect_Object(Lux_Car.Car_Radar, Threshold);
+         if Sensor_System.Seat_Occupied(Lux_Car.Car_Sensor) then
+            Put_Line ("Sensor: Seat is detected with (weight: " & Float 'Image(Lux_Car.Car_Sensor.Detected_Weight) & "kg).");
+            Sensor_System.Check_Seatbelt(Lux_Car.Car_Sensor); 
+         else
+            Put_Line("Seatbelt is not fastened");
+         end if;
+        
+            Radar_Systems.Detect_Object(Lux_Car.Car_Radar, Threshold);
          if Radar_Systems.Is_Clear_To_Move(Lux_Car.Car_Radar,Threshold ) then  
             -- Check if the vehicle is mobile 
             if Vehicle_Mobile(Lux_Car) then
                Put_Line("Vehicle is moving");
             else
+               Lux_Car.Speed := 0.0;
+               Lux_Car.Is_Moving := False;
                Put_Line("Vehicle is not moving");
             end if;   
             Lux_Car.Is_Moving := True;
@@ -78,6 +94,14 @@ package body  Luxury_Vehicle is
    begin
       Sensor_System.Handle_Object_Detection(Vehicle_System.Vehicle(Lux_Car),Current_Speed );
    end Reduce_Speed;
+
+   procedure Turn_Off_Engine(Lux_Car : in out Luxury_Car) is
+   begin
+      Vehicle_System.Stop_Engine(Vehicle_System.Vehicle(Lux_Car));
+
+      Sensor_System.Deactivate_Sensor(Lux_Car.Car_Sensor);
+      Radar_Systems.Deactivate_Radar(Lux_Car.Car_Radar);
+   end Turn_Off_Engine;
 
 
 end Luxury_Vehicle;
