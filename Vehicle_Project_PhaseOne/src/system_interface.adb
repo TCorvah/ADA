@@ -94,11 +94,48 @@ package body System_Interface is
   
    procedure Run_Standard_Scenario( Vehicles : in out Standard_Vehicle.Standard) is
       -- Declare variables
-      Scenario : Integer;
-      Detected_Distance : Float;  
+      Detected_Weight : Float;  
       TOD : Integer; -- Time of day
+      Scenario : Integer;
    begin
       Activate_TOD(Vehicles.Car_Sensor);
+        -- Set visibility based on the time of day
+      Sensor_System.Check_Visibility(Vehicles.Car_Sensor);
+ 
+      Sensor_System.Update_Headlights(Vehicles.Car_Sensor);
+     
+      -- Prompt the user for the detected weight
+      Put_Line("Enter the detected weight (in kg): ");
+      Get(Detected_Weight);
+      -- Set detected weight
+      Vehicles.Car_Sensor.Detected_Weight := Detected_Weight;
+      Vehicles.Car_Sensor.Seatbelt_On := True; -- Simulate seatbelt status
+
+      -- Prompt the user for the scenario
+      Put_Line("Select the Scenario: ");
+      Put_Line("1. Parking Garage");
+      Put_Line("2. Quiet Country Road");
+      Put_Line("3. Busy City Street");
+      Put_Line("4. Highway");
+      Get(Scenario);
+      -- Set the scenario
+  
+      case Scenario is
+         when 1 =>
+            Put_Line("Scenario: Parking Garage");
+            Standard_Vehicle.SeatBelt_Warning(Vehicles);
+            Standard_Vehicle.Check_Sensors(Vehicles);
+        
+         when 2 =>
+            Put_Line("Scenario: Quiet Country Road");
+         when 3 =>
+            Put_Line("Scenario: Busy City Street");
+         when 4 =>
+            Put_Line("Scenario: Highway");
+         when others =>
+            Put_Line("Invalid scenario selected.");
+            return;
+      end case;
 
    end Run_Standard_Scenario;
 
