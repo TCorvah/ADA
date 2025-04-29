@@ -2,18 +2,25 @@ with Ada.Text_IO; use Ada.Text_IO;
 with Luxury_Vehicle, Radar_Systems, Sensor_System, Vehicle_System;
 use Vehicle_System;
 package body  Luxury_Vehicle is
-
+   -- Function to check if the door is closed
    function is_Door_Closed(Lux_Car : in out  Luxury_Car) return Boolean is
    begin
       return Lux_Car.Current_Door_Status = Door_Closed;         
    end is_Door_Closed;
 
+   -- Function to check if the vehicle is mobile
+   -- A vehicle is considered mobile if the engine is on, speed is greater than 0,
+   -- the door is closed, and the seatbelt is fastened
+   -- The function returns true if the vehicle is mobile, false otherwise
+   -- The function checks the engine status, speed, door status, and seatbelt status
    function Vehicle_Mobile(Lux_Car : in out Luxury_Car) return Boolean is
    begin
       return Lux_Car.Engine_On and Lux_Car.Speed > 0.0 and Lux_Car.Current_Door_Status = Door_Closed
              and Lux_Car.Car_Sensor.Seatbelt_On;
    end Vehicle_Mobile;
+   
 
+   -- Function to check the door status
    procedure Update_Door_Status(Lux_Car : in out Luxury_Car) is
    begin
       if Sensor_System.Is_Door_Open(Lux_Car.Car_Sensor) then
@@ -22,13 +29,11 @@ package body  Luxury_Vehicle is
       else
          Lux_Car.Current_Door_Status := Vehicle_System.Door_Closed;
          Put_Line("Door is closed");
-      end if;
-         
+      end if;      
    end Update_Door_Status;
 
-
-   procedure Attempt_Move(Lux_Car : in out Luxury_Car) is
-   Threshold : constant Float := 2.0;
+   -- Function to check if the vehicle can move
+   procedure Attempt_Move(Lux_Car : in out Luxury_Car; Threshold : Float) is
    begin
       Sensor_System.Toggle_Door(Lux_Car.Car_Sensor);
       Sensor_System.Toggle_Door(Lux_Car.Car_Sensor); 
@@ -53,15 +58,13 @@ package body  Luxury_Vehicle is
          -- check if visibility is good
          Sensor_System.Check_Visibility(Lux_Car.Car_Sensor);
       
-
       -- check if seatbelt fasten
          if Sensor_System.Seat_Occupied(Lux_Car.Car_Sensor) then
             Put_Line ("Sensor: Seat is detected with (weight: " & Float 'Image(Lux_Car.Car_Sensor.Detected_Weight) & "kg).");
             Sensor_System.Check_Seatbelt(Lux_Car.Car_Sensor); 
          else
             Put_Line("Seatbelt is not fastened");
-         end if;
-        
+         end if;     
             Radar_Systems.Detect_Object(Lux_Car.Car_Radar, Threshold);
          if Radar_Systems.Is_Clear_To_Move(Lux_Car.Car_Radar,Threshold ) then  
             -- Check if the vehicle is mobile 
@@ -77,7 +80,6 @@ package body  Luxury_Vehicle is
          end if;
       else
       Put_Line("Cannot move.");
-         -- Optionally, engage parking brake or alert the driver
       end if;
    end Attempt_Move;
 
@@ -98,7 +100,6 @@ package body  Luxury_Vehicle is
    procedure Turn_Off_Engine(Lux_Car : in out Luxury_Car) is
    begin
       Vehicle_System.Stop_Engine(Vehicle_System.Vehicle(Lux_Car));
-
       Sensor_System.Deactivate_Sensor(Lux_Car.Car_Sensor);
       Radar_Systems.Deactivate_Radar(Lux_Car.Car_Radar);
    end Turn_Off_Engine;

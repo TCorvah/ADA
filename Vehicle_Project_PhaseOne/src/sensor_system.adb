@@ -1,4 +1,6 @@
 with Ada.Text_IO; use Ada.Text_IO;
+with Vehicle_Constants;
+use Vehicle_Constants;
 with Vehicle_System;
 use Vehicle_System;
 
@@ -86,14 +88,14 @@ package body Sensor_System is
    end Update_Headlights;
 
    procedure Handle_Object_Detection(V : in out Vehicle_System.Vehicle; Current_Speed : in Float) is
-   thhreshold : Float := 10.0; -- Example threshold for object detection
+   -- Example threshold for object detection
    begin
-      if V.Engine_On and Current_Speed > thhreshold then
-         V.Set_Speed(V.Speed - 10.0); -- Example: decrease speed if object detected
+      if V.Engine_On and Current_Speed > Vehicle_Constants.Threshold then
+         V.Set_Speed(V.Speed - Vehicle_Constants.Threshold); -- Example: decrease speed if object detected
       -- Placeholder for object detection logic
          Put_Line("Sensor: Object detected while vehicle is moving, SLOWING DOWN.");
       else
-         Put_Line("Sensor: Object detected while vehicle is stationary.");
+         Put_Line("Sensor: Deaccelerating Vehicle.");
          V.Is_Moving := False; -- Example: stop the vehicle if object detected
          V.Set_Speed(0.0); -- Example: stop the vehicle if object detected
       end if;

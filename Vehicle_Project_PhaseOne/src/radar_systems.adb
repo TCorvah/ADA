@@ -18,19 +18,16 @@ package body Radar_Systems is
    procedure Detect_Object(Radar_Data : in out Radar; Threshold : Float) is
    begin
       Activate_Radar(Radar_Data);
-      if Radar_Data.Object_Distance <= Radar_Data.Min_Detection_Range then
-         Put_Line ("Object detected too close to vehicle, vehicle must stop");
-         Put_Line ("Radar: Object Distance: " & Float'Image(Radar_Data.Object_Distance));
+      if Radar_Data.Object_Distance <= Min_Detection_Range then
+         Put_Line ("Radar: Object very close : (" & Float'Image(Radar_Data.Object_Distance) & " ft). STOP Vehicle");
          Radar_Data.Object_In_Motion := False;
-      elsif Radar_Data.Object_Distance <= Radar_Data.Max_Detection_Range and
-         Radar_Data.Object_Distance > Radar_Data.Min_Detection_Range  then
-            Put_Line ("Object detected very far away");
-      elsif Radar_Data.Object_Distance < Threshold then
-         if Radar_Data.Object_In_Motion then
-            Put_Line ("Object approaching within threshold range; initiating deceleration");
-         end if;
+      elsif Radar_Data.Object_Distance <= Max_Detection_Range and
+         Radar_Data.Object_Distance > Min_Detection_Range  then
+         Put_Line ("Radar: Object detected at distance: (" & Float'Image(Radar_Data.Object_Distance) & " ft). SLOW DOWN");
       else
-         Put_Line ("Vehicle can move safely");
+         Put_Line ("No close object, drive safely");
+         Radar_Data.Object_In_Motion := True;
+         Radar_Data.Object_Detected := False;
       end if;
    end Detect_Object;
 
