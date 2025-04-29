@@ -3,6 +3,7 @@ use Vehicle_System;
 package Sensor_System is
 
    type Sensor_Status is (Off, On);
+   type Time_of_Day is (Day, Night);
 
 -- Sensor has two states and will be use for standard and luxury cars
    type Sensor is tagged record
@@ -10,7 +11,7 @@ package Sensor_System is
       Door_Open : Boolean := False;
       Detected_Weight : Float := 0.0;
       Seatbelt_On : Boolean := False;
-      Visibility : Float := 1.0; -- from 0.0 (dark) to 1.0 (bright)
+      Visibility : Time_of_Day := Night; -- from 0.0 (dark) to 1.0 (bright)
       Headlights_On : Boolean := False;
    end record;
 
