@@ -5,7 +5,6 @@ package Vehicle_System is
       Engine_On : Boolean := False;
       Is_Reserved : Boolean := False;
       Is_Moving : Boolean := False;
-      Number_Of_Doors : Integer;
       Doors_Closed : Boolean := True;
       MPG : Float := 0.0;
       Speed : Float := 0.0;

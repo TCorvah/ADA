@@ -39,9 +39,11 @@ package Luxury_Vehicle is
    procedure Reduce_Speed(Lux_Car : in out Luxury_Car; Current_Speed : in Float);
 
    function is_Door_Closed(Lux_Car : in out Luxury_Car) return Boolean;
-   procedure Attempt_Move(Lux_Car : in out Luxury_Car);
+   procedure Attempt_Move(Lux_Car : in out Luxury_Car; Threshold : in Float);
 
    overriding function Vehicle_Mobile(Lux_Car : in out Luxury_Car) return Boolean;
+
+   procedure Turn_Off_Engine(Lux_Car : in out Luxury_Car);
 
 
 end Luxury_Vehicle;
