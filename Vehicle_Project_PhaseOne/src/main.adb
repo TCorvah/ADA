@@ -6,10 +6,8 @@ with System_Interface;
 
 procedure Main is
 
-
    L : Luxury_Vehicle.Luxury_Car;
-   S : Sensor_System.Sensor;
-   R : Radar_Systems.Radar;
+   S : Standard_Vehicle.Standard;
 
 begin
    Put_Line("Vehicle Project - Phase One");

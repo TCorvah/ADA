@@ -13,16 +13,29 @@ package body System_Interface is
    procedure Run_System_Interface( Vehicles : in out Luxury_Vehicle.Luxury_Car) is
       -- Declare variables
       Scenario : Integer;
-      Detected_Distance : Float;   
+      Detected_Distance : Float;  
+      TOD : Integer; -- Time of day 
    begin
       -- Prompt the user for the time of day
+      Put_Line("=====================================");
+      Put_Line("Vehicle Project - Phase One");
       Put_Line("Enter the time of day (0.0 - 1.0): ");
-      Get(Vehicles.Car_Sensor.Visibility);
+      Put_Line("1 = Night, 2 = Day");
+      Get(TOD);
 
-      if Vehicles.Car_Sensor.visibility < 0.0 or Vehicles.Car_Sensor.visibility > 1.0 then
-         Put_Line("Invalid time of day. Please enter a value between 0.0 and 1.0.");
-         return;
-      end if;
+      case TOD is
+         when 1 =>
+            Vehicles.Car_Sensor.Visibility := Night; -- Night
+            Put_Line("Time of day: Night");
+         when 2 =>
+            Vehicles.Car_Sensor.Visibility := Day; -- Day
+            Put_Line("Time of day: Day");
+         when others =>
+            Put_Line("Invalid time of day. Please enter a value between 0.0 and 1.0.");
+            return;
+      end case;
+
+
       -- Set visibility based on the time of day
       Sensor_System.Check_Visibility(Vehicles.Car_Sensor);
  

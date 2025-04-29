@@ -91,12 +91,16 @@ package body  Luxury_Vehicle is
       Lux_Car.Car_Radar := Radars;  
    end Enable_Object_Detection;
 
-
+   -- Procedure to reduce speed based on object detection
+   -- This procedure uses the radar system to detect objects and adjust speed accordingly
+   -- It takes the current speed as input and uses the radar system to determine if the vehicle should slow down
+   -- The procedure is called when the vehicle is in motion and an object is detected within a certain range
    procedure Reduce_Speed(Lux_Car : in out Luxury_Car; Current_Speed : in Float) is
    begin
       Sensor_System.Handle_Object_Detection(Vehicle_System.Vehicle(Lux_Car),Current_Speed );
    end Reduce_Speed;
 
+   -- Procedure to turn off the engine and deactivate the sensor
    procedure Turn_Off_Engine(Lux_Car : in out Luxury_Car) is
    begin
       Vehicle_System.Stop_Engine(Vehicle_System.Vehicle(Lux_Car));

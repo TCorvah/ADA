@@ -61,7 +61,7 @@ package body Sensor_System is
 
    procedure Check_Visibility(S : in out Sensor) is
    begin
-      if S.Visibility < 0.5 then 
+      if S.Visibility = Night then 
          S.Headlights_On := True;
          Put_Line("Sensor: Headlights turned ON, Time of Day is night.");
       else
@@ -72,7 +72,7 @@ package body Sensor_System is
 
    function Should_Turn_On_Headlights(S : in Sensor) return Boolean is
    begin
-      return S.Visibility < 0.5;
+      return S.Visibility = Night;
    end Should_Turn_On_Headlights;
 
 
