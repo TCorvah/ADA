@@ -7,14 +7,13 @@ with Standard_Vehicle; use Standard_Vehicle;
 with Vehicle_Constants; use Vehicle_Constants;
 with Ada.Float_Text_IO; use Ada.Float_Text_IO;
 with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
+with Vehicle_Types; use Vehicle_Types;
 
 package body System_Interface is
 
-   procedure Run_System_Interface( Vehicles : in out Luxury_Vehicle.Luxury_Car) is
+   procedure Activate_TOD(Time : in out Sensor_System.Sensor ) is
       -- Declare variables
-      Scenario : Integer;
-      Detected_Distance : Float;  
-      TOD : Integer; -- Time of day 
+      TOD : Integer; -- Time of day
    begin
       -- Prompt the user for the time of day
       Put_Line("=====================================");
@@ -22,20 +21,26 @@ package body System_Interface is
       Put_Line("Enter the time of day (0.0 - 1.0): ");
       Put_Line("1 = Night, 2 = Day");
       Get(TOD);
-
       case TOD is
          when 1 =>
-            Vehicles.Car_Sensor.Visibility := Night; -- Night
+            Time.Visibility := Night; -- Night
             Put_Line("Time of day: Night");
          when 2 =>
-            Vehicles.Car_Sensor.Visibility := Day; -- Day
+            Time.Visibility := Day; -- Day
             Put_Line("Time of day: Day");
          when others =>
             Put_Line("Invalid time of day. Please enter a value between 0.0 and 1.0.");
             return;
       end case;
 
-
+   end Activate_TOD;
+   -- Procedure to run the luxury vehicle interface
+   procedure Run_Luxury_Scenario( Vehicles : in out Luxury_Vehicle.Luxury_Car) is
+      -- Declare variables
+      Scenario : Integer;
+      Detected_Weight : Float;  
+   begin
+      Activate_TOD (Vehicles.Car_Sensor);
       -- Set visibility based on the time of day
       Sensor_System.Check_Visibility(Vehicles.Car_Sensor);
  
@@ -43,9 +48,9 @@ package body System_Interface is
      
       -- Prompt the user for the detected weight
       Put_Line("Enter the detected weight (in kg): ");
-      Get(Detected_Distance);
+      Get(Detected_Weight);
       -- Set detected weight
-      Vehicles.Car_Sensor.Detected_Weight := Detected_Distance;
+      Vehicles.Car_Sensor.Detected_Weight := Detected_Weight;
       Vehicles.Car_Sensor.Seatbelt_On := True; -- Simulate seatbelt status
 
       -- Prompt the user for the scenario
@@ -75,7 +80,6 @@ package body System_Interface is
             Put_Line("Scenario: Busy City Street");
             Luxury_Vehicle.Attempt_Move (Vehicles, Vehicles.Car_Radar.Object_Distance);
             Luxury_Vehicle.Reduce_Speed (Vehicles, Vehicle_Constants.Threshold);
-
          when 4 =>
             Vehicles.Car_Radar.Object_Distance := 80.8; -- 8 meters
             Put_Line("Scenario: Highway");
@@ -85,8 +89,46 @@ package body System_Interface is
             Put_Line("Invalid scenario selected.");
             return;
       end case;
-   end Run_System_Interface;
+
+   end Run_Luxury_Scenario;
   
+   procedure Run_Standard_Scenario( Vehicles : in out Standard_Vehicle.Standard) is
+      -- Declare variables
+      Scenario : Integer;
+      Detected_Distance : Float;  
+      TOD : Integer; -- Time of day
+   begin
+      Activate_TOD(Vehicles.Car_Sensor);
+
+   end Run_Standard_Scenario;
+
+
+   procedure Run_System_Interface( Selected_Type : in out Vehicle_Types.Vehicle_Type) is
+      -- Declare variables
+      Scenario : Integer;
+      Detected_Distance : Float;  
+      std: Standard_Vehicle.Standard;
+      lux: Luxury_Vehicle.Luxury_Car;
+   begin
+      -- Prompt the user for the vehicle type
+      Put_Line("Select the Vehicle Type: ");
+      Put_Line("1. Luxury Vehicle");
+      Put_Line("2. Standard Vehicle");
+      Get(Scenario);
+      -- Set the vehicle type
+      case Scenario is
+         when 1 =>
+            Run_Luxury_Scenario(lux);
+         when 2 =>
+            Run_Standard_Scenario(std);
+         when others =>
+            Put_Line("Invalid vehicle type selected.");
+            return;
+      end case;
+
+
+
+   end Run_System_Interface;
    
  
 end System_Interface;
