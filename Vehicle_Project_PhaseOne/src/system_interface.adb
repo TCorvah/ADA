@@ -1,4 +1,5 @@
 with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Strings.Fixed; use Ada.Strings.Fixed;
 with Vehicle_System; use Vehicle_System;
 with Radar_Systems; use Radar_Systems;
 with Sensor_System; use Sensor_System;
@@ -39,7 +40,9 @@ package body System_Interface is
       -- Declare variables
       Scenario : Integer;
       Detected_Weight : Float;  
+      -- MPG : Float;    
    begin
+
       Activate_TOD (Vehicles.Car_Sensor);
       -- Set visibility based on the time of day
       Sensor_System.Check_Visibility(Vehicles.Car_Sensor);
@@ -98,6 +101,8 @@ package body System_Interface is
       TOD : Integer; -- Time of day
       Scenario : Integer;
    begin
+      --Put_Line(Trim(Vehicles.Model 'Image(Model)) & ": $ " & Trim(Float'Image(Cost)) & " MPG: " & Trim(Float'Image(Miles_Per_Gallon)));
+      -- Prompt the user for the time of day
       Activate_TOD(Vehicles.Car_Sensor);
         -- Set visibility based on the time of day
       Sensor_System.Check_Visibility(Vehicles.Car_Sensor);

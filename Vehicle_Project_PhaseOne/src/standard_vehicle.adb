@@ -20,6 +20,8 @@ package body Standard_Vehicle is
       end if;  
    end SeatBelt_Warning;
 
+   
+
    procedure Check_Sensors(V : in out Standard) is   
    begin
       Sensor_System.Activate_Sensor(V.Car_Sensor);
@@ -40,7 +42,5 @@ package body Standard_Vehicle is
       return V.Current_Door_Status = Vehicle_System.Door_Closed;
    end is_Door_Closed;
    
-   
-
 
 end Standard_Vehicle;
