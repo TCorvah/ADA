@@ -9,8 +9,12 @@ with Vehicle_Constants; use Vehicle_Constants;
 with Ada.Float_Text_IO; use Ada.Float_Text_IO;
 with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 with Vehicle_Types; use Vehicle_Types;
+with Ada.Strings; use Ada.Strings;
+
+
 
 package body System_Interface is
+   package Float_IO is new Ada.Text_IO.Float_IO(Float);
 
    procedure Activate_TOD(Time : in out Sensor_System.Sensor ) is
       -- Declare variables
@@ -33,8 +37,8 @@ package body System_Interface is
             Put_Line("Invalid time of day. Please enter a value between 0.0 and 1.0.");
             return;
       end case;
-
    end Activate_TOD;
+
    -- Procedure to run the luxury vehicle interface
    procedure Run_Luxury_Scenario( Vehicles : in out Luxury_Vehicle.Luxury_Car) is
       -- Declare variables
@@ -42,8 +46,14 @@ package body System_Interface is
       Detected_Weight : Float;  
       -- MPG : Float;    
    begin
-
-      Activate_TOD (Vehicles.Car_Sensor);
+      Put_Line("Car Type: " & Trim(Vehicle_Type'Image(Vehicles.Lux_Model),Right));
+      Put("Rental Fee: $");
+      Float_IO.Put(Vehicles.luxury_cost, Fore => 1, Aft => 2, Exp => 0);
+      New_Line;
+      Put("MPG: ");
+      Float_IO.Put(Vehicles.miles_gallon, Fore => 1, Aft => 1, Exp => 0);
+      New_Line;
+      Activate_TOD(Vehicles.Car_Sensor);
       -- Set visibility based on the time of day
       Sensor_System.Check_Visibility(Vehicles.Car_Sensor);
  
@@ -103,6 +113,13 @@ package body System_Interface is
    begin
       --Put_Line(Trim(Vehicles.Model 'Image(Model)) & ": $ " & Trim(Float'Image(Cost)) & " MPG: " & Trim(Float'Image(Miles_Per_Gallon)));
       -- Prompt the user for the time of day
+      Put_Line("Car Type: " & Trim(Vehicle_Type'Image(Vehicles.Model),Right));
+      Put("Rental Fee: $");
+      Float_IO.Put(Vehicles.Cost, Fore => 1, Aft => 2, Exp => 0);
+      New_Line;
+      Put("MPG: ");
+      Float_IO.Put(Vehicles.Miles_Per_Gallon, Fore => 1, Aft => 1, Exp => 0);
+      New_Line;
       Activate_TOD(Vehicles.Car_Sensor);
         -- Set visibility based on the time of day
       Sensor_System.Check_Visibility(Vehicles.Car_Sensor);

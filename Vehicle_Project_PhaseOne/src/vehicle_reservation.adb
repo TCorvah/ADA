@@ -99,12 +99,9 @@ package body Vehicle_Reservation is
       Put_Line("Customer: " & Res.Name(1 .. Res.Last));
       Put_Line("Credit Card: " & Res.Credit_Card);
       Put_Line("Car Type: " & Trim(Vehicle_Type'Image(Res.Car_Type),Right));
-
-   
       Put("Rental Fee: $");
       Float_IO.Put(Res.Rental_Fee, Fore => 1, Aft => 2, Exp => 0);
       New_Line;
-
       Put("MPG: ");
       Float_IO.Put(Res.MPG, Fore => 1, Aft => 1, Exp => 0);
       New_Line;

@@ -17,9 +17,9 @@ begin
    Put_Line("Luxury Vehicle Simulation");
    Put_Line("=====================================");
    Put_Line("Initializing vehicle systems...");
-   --System_Interface.Run_System_Interface(User_Choice);
+   System_Interface.Run_System_Interface(User_Choice);
 
-   Vehicle_Reservation.Display_Reservation(Res);
+   --Vehicle_Reservation.Display_Reservation(Res);
    -- Display the reservation details
 
       
