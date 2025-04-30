@@ -1,4 +1,7 @@
+
 package Vehicle_Constants is
+   type Dollar_amount is delta 0.01 digits 7;
+
 
    -- Constants for vehicle types
    Luxury_Rental_Cost : constant Float := 100.0; -- Cost per day for luxury rental    

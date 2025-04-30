@@ -1,4 +1,5 @@
-with Radar_Systems, Sensor_System, Vehicle_System;
+with Radar_Systems, Sensor_System, Vehicle_System, Vehicle_Types;
+
 
 
 package Luxury_Vehicle is
@@ -8,6 +9,9 @@ package Luxury_Vehicle is
    type Luxury_Car is new Vehicle_System.Vehicle with record
       Car_Sensor : Sensor_System.Sensor;
       Car_Radar : Radar_Systems.Radar;
+      luxury_cost : Float := 100.0;
+      miles_gallon : Float := 40.0;
+   
    end record;
 
 
