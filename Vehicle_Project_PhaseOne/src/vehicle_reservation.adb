@@ -15,8 +15,11 @@ package body Vehicle_Reservation is
    -- It includes input validation and reservation confirmation.
    -- This procedure prompts the user for their name and stores it in the Reservation record.
    -- It uses Ada.Text_IO for input and output operations.
-   -- The procedure is called from the Make_Reservation procedure to gather user information.
+
   
+  --- This procedure prompts the user for their name and stores it in the Reservation record.
+   -- It uses Ada.Text_IO for input and output operations.
+   -- The procedure checks the length of the name to ensure it does not exceed 50 characters.
    procedure Input_Driver_Name(Res : in out Reservation) is
    begin  
       -- Prompt for Name
@@ -32,7 +35,11 @@ package body Vehicle_Reservation is
       end loop;
    end Input_Driver_Name;
 
-
+   -- This procedure prompts the user for their credit card number and validates it.
+   -- It uses Ada.Text_IO for input and output operations.
+   -- The procedure checks the length of the credit card number to ensure it is exactly 10 digits.
+   -- It also checks if the input contains only digits.
+   -- If the input is valid, it stores the credit card number in the Reservation record.
    procedure Input_Credit_Card(Res : in out Reservation) is
    begin
       -- Prompt for Credit Card Number with validation
@@ -53,10 +60,6 @@ package body Vehicle_Reservation is
       end loop;
    end Input_Credit_Card;
 
-   
-
-   
-   
 
 
 end Vehicle_Reservation;

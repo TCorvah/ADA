@@ -14,8 +14,21 @@ with Vehicle_Reservation; use Vehicle_Reservation;
 
 
 package body System_Interface is
+   -- This package implements the system interface for the vehicle project.
+   -- It includes procedures to run the vehicle simulation, handle user input,
+   -- and manage the vehicle's sensors and scenarios.
+   -- The package provides a set of procedures to manage the vehicle system and ensure the vehicle's safety.
+   -- The package also includes a procedure to handle object detection while the vehicle is in motion.
+   -- The package is designed to be used in conjunction with the Vehicle_System and Sensor_System packages.
+   -- The package provides a set of procedures to manage the vehicle system and ensure the vehicle's safety.
+
    package Float_IO is new Ada.Text_IO.Float_IO(Float);
 
+   -- Procedure to activate the time of day
+   -- This procedure prompts the user for the time of day and sets the visibility accordingly.
+   -- It takes a Sensor object as an input parameter and modifies its visibility attribute.
+   -- The procedure also prints a message indicating the time of day.
+   -- The procedure is designed to be used in conjunction with the Sensor_System package.
    procedure Activate_TOD(Time : in out Sensor_System.Sensor ) is
       -- Declare variables
       TOD : Integer; -- Time of day
@@ -103,7 +116,8 @@ package body System_Interface is
       end case;
 
    end Run_Luxury_Scenario;
-  
+
+   -- Procedure to run the standard vehicle interface
    procedure Run_Standard_Scenario( Vehicles : in out Standard_Vehicle.Standard) is
       -- Declare variables
       Detected_Weight : Float;  
@@ -159,7 +173,13 @@ package body System_Interface is
 
    end Run_Standard_Scenario;
 
-
+   -- Procedure to run the system interface
+   -- This procedure prompts the user for the vehicle type, runs the appropriate scenario,
+   -- and handles the reservation process.
+   -- It takes a Vehicle_Type object as an input parameter and modifies its status.
+   -- The procedure also includes a reservation process for the selected vehicle type.
+   -- The procedure is designed to be used in conjunction with the Vehicle_Reservation package.
+   -- The procedure also includes a reservation process for the selected vehicle type.
    procedure Run_System_Interface(Selected_Type : in out Vehicle_Types.Vehicle_Type) is
       -- Declare variables
       Scenario     : Integer;
