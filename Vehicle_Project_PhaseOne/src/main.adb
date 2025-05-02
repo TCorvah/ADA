@@ -1,4 +1,8 @@
 with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
+with Ada.Float_Text_IO; use Ada.Float_Text_IO;
+with Ada.Strings.Fixed; use Ada.Strings.Fixed;
+with Ada.Strings; use Ada.Strings;
 with Luxury_Vehicle, Standard_Vehicle, Sensor_System, Radar_Systems;
 with System_Interface;
 with Vehicle_Types;
@@ -18,11 +22,9 @@ begin
    Put_Line("=====================================");
    Put_Line("Initializing vehicle systems...");
    System_Interface.Run_System_Interface(User_Choice);
-
-   --Vehicle_Reservation.Display_Reservation(Res);
-   -- Display the reservation details
-
-      
-
+   Put_Line ("Simulation complete.");
+   Put_Line("=====================================");
+   Put_Line("Vehicle Reservation System");
+   Put_Line("=====================================");
 
 end Main;

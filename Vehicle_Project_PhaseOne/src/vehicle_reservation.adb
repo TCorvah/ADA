@@ -1,13 +1,12 @@
-with Ada.Text_IO;        
-use Ada.Text_IO;
+with Ada.Text_IO;  use Ada.Text_IO;     
 with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
-with Ada.Strings.Fixed; 
-use Ada.Strings.Fixed;
+with Ada.Strings.Fixed; use Ada.Strings.Fixed;
 with Ada.Strings; use Ada.Strings;
-with Standard_Vehicle;
+with Standard_Vehicle; use Standard_Vehicle;
+with Luxury_Vehicle; use Luxury_Vehicle;
+with Ada.Float_Text_IO; use Ada.Float_Text_IO;
 with Vehicle_Constants; use Vehicle_Constants;
-with Vehicle_Constants;
-with System_Interface; use System_Interface;
+with Vehicle_Types; use Vehicle_Types;
 
 
 package body Vehicle_Reservation is
@@ -21,9 +20,15 @@ package body Vehicle_Reservation is
    procedure Input_Driver_Name(Res : in out Reservation) is
    begin  
       -- Prompt for Name
-      Put("Enter your name: ");
-      Get_Line(Res.Name, Res.Last);
-      Put_Line ("Name entered: " & Res.Name(1 .. Res.Last));
+      loop           
+         Put("Enter your name (max 50 characters): ");
+         Get_Line(Res.Name, Res.Last);
+         if Res.Last > 50 then
+            Put_Line("Name too long. Please enter a name with a maximum of 50 characters.");
+         else
+            exit;
+         end if;
+      end loop;
    end Input_Driver_Name;
 
 
@@ -47,9 +52,7 @@ package body Vehicle_Reservation is
       end loop;
    end Input_Credit_Card;
 
-
-
-
+   
 
    -- Define the Reservation record type
    -- This record holds the details of a vehicle reservation
@@ -62,49 +65,42 @@ package body Vehicle_Reservation is
       Input_Str : String (1 .. 50);
       Last      : Natural;
       Valid_CC  : Boolean := False;
-      Choice    : Integer;
+      Choice    : Integer := 0;
       -- Trimmed_Name : String;   
    begin
      Input_Driver_Name(Res);
      Input_Credit_Card(Res);
-      -- Prompt for Credit Card Number with validation
-      
-      -- Prompt for Vehicle Type
-      loop
-         Put_Line("Select vehicle type:");
-         Put_Line("1. Standard");
-         Put_Line("2. Luxury"); 
-         Put("Enter choice (1 or 2): ");
-         Get(Choice);
-         if Choice = 1 then
-            Res.Car_Type := System_Interface.Selected_Vehicle;
-            Res.Rental_Fee := Vehicle_Constants.Standard_Rental_Cost;
-            Res.MPG := Vehicle_Constants.Standard_MPG;
-            exit;
-         elsif Choice = 2 then
-            Res.Car_Type := Vehicle_Types.Luxury;
-            Res.Rental_Fee := Vehicle_Constants.Luxury_Rental_Cost;
-            Res.MPG := Vehicle_Constants.Luxury_MPG;
-            exit;
-         else
-            Put_Line("Invalid choice. Please select 1 or 2.");
-         end if;
-      end loop;
-
+     if Choice = 1 then
+        Res.Car_Type := Standard_cars;
+        Res.Rental_Fee := Vehicle_Constants.Standard_Rental_Cost;
+        Res.MPG := Vehicle_Constants.Standard_MPG;
+        Put_Line("Standard Car Type: " & Trim(Vehicle_Type'Image(Res.Car_Type),Right));
+      elsif Choice = 2 then 
+        Res.Car_Type := Vehicle_Types.Luxury_cars;
+        Res.Rental_Fee := Vehicle_Constants.Luxury_Rental_Cost;
+        Res.MPG := Vehicle_Constants.Luxury_MPG;
+        Put_Line("Luxury Car Type: " & Trim(Vehicle_Type'Image(Luxury_cars),Right));
+      else
+        Put_Line("Invalid vehicle type selected.");
+        return;
+      end if;   
    end Make_Reservation;
 
    procedure Display_Reservation(Res : in out  Reservation) is
    begin
       Make_Reservation(Res);
       Put_Line("Customer: " & Res.Name(1 .. Res.Last));
-      Put_Line("Credit Card: " & Res.Credit_Card);
-      Put_Line("Car Type: " & Trim(Vehicle_Type'Image(Res.Car_Type),Right));
-      Put("Rental Fee: $");
-      Float_IO.Put(Res.Rental_Fee, Fore => 1, Aft => 2, Exp => 0);
-      New_Line;
-      Put("MPG: ");
-      Float_IO.Put(Res.MPG, Fore => 1, Aft => 1, Exp => 0);
-      New_Line;
+      --Put_Line("Credit Card: " & Res.Credit_Card);
+      --Put_Line("Car Type: " & Trim(Vehicle_Type'Image(Res.Car_Type),Right));
+      --Put("Rental Fee: $");
+      -- Display the rental fee with 2 decimal places
+      -- Use Float_IO to format the output
+      --Res.Rental_Fee := Vehicle_Constants.Get_Rental_Cost(Res.Car_Type);
+      --Float_IO.Put(Res.Rental_Fee, Fore => 1, Aft => 2, Exp => 0);
+      --New_Line;
+      --Put("MPG: ");
+      --Float_IO.Put(Res.MPG, Fore => 1, Aft => 1, Exp => 0);
+      --New_Line;
    end Display_Reservation;
 
    

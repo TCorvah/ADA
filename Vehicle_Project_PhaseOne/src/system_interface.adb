@@ -10,7 +10,7 @@ with Ada.Float_Text_IO; use Ada.Float_Text_IO;
 with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 with Vehicle_Types; use Vehicle_Types;
 with Ada.Strings; use Ada.Strings;
-
+with Vehicle_Reservation; use Vehicle_Reservation;
 
 
 package body System_Interface is
@@ -23,7 +23,7 @@ package body System_Interface is
       -- Prompt the user for the time of day
       Put_Line("=====================================");
       Put_Line("Vehicle Project - Phase One");
-      Put_Line("Enter the time of day (0.0 - 1.0): ");
+      Put_Line("Enter the time of day: ");
       Put_Line("1 = Night, 2 = Day");
       Get(TOD);
       case TOD is
@@ -74,7 +74,6 @@ package body System_Interface is
       Put_Line("4. Highway");
       Get(Scenario);
       -- Set the scenario
-  
       case Scenario is
          when 1 =>
             Vehicles.Car_Radar.Object_Distance := 0.2; -- 5 meters
@@ -94,7 +93,7 @@ package body System_Interface is
             Luxury_Vehicle.Attempt_Move (Vehicles, Vehicles.Car_Radar.Object_Distance);
             Luxury_Vehicle.Reduce_Speed (Vehicles, Vehicle_Constants.Threshold);
          when 4 =>
-            Vehicles.Car_Radar.Object_Distance := 80.8; -- 8 meters
+            Vehicles.Car_Radar.Object_Distance := 80.8; -- 80 meters
             Put_Line("Scenario: Highway");
             Luxury_Vehicle.Attempt_Move (Vehicles, Vehicles.Car_Radar.Object_Distance);
             Luxury_Vehicle.Reduce_Speed (Vehicles, Vehicle_Constants.Threshold);
@@ -111,8 +110,7 @@ package body System_Interface is
       TOD : Integer; -- Time of day
       Scenario : Integer;
    begin
-      --Put_Line(Trim(Vehicles.Model 'Image(Model)) & ": $ " & Trim(Float'Image(Cost)) & " MPG: " & Trim(Float'Image(Miles_Per_Gallon)));
-      -- Prompt the user for the time of day
+      -- Prompt the user for the vehicle type
       Put_Line("Car Type: " & Trim(Vehicle_Type'Image(Vehicles.Model),Right));
       Put("Rental Fee: $");
       Float_IO.Put(Vehicles.Cost, Fore => 1, Aft => 2, Exp => 0);
@@ -162,32 +160,87 @@ package body System_Interface is
    end Run_Standard_Scenario;
 
 
-   procedure Run_System_Interface( Selected_Type : in out Vehicle_Types.Vehicle_Type) is
+   procedure Run_System_Interface(Selected_Type : in out Vehicle_Types.Vehicle_Type) is
       -- Declare variables
-      Scenario : Integer;
-      Detected_Distance : Float;  
-      std: Standard_Vehicle.Standard;
-      lux: Luxury_Vehicle.Luxury_Car;
+      Scenario     : Integer;
+      User_Choice  : Integer;
+      std          : Standard_Vehicle.Standard;
+      lux          : Luxury_Vehicle.Luxury_Car;
+      Res          : Vehicle_Reservation.Reservation;
    begin
       -- Prompt the user for the vehicle type
       Put_Line("Select the Vehicle Type: ");
-      Put_Line("1. Luxury Vehicle");
-      Put_Line("2. Standard Vehicle");
+      Put_Line("1. Standard Vehicle");
+      Put_Line("2. Luxury Vehicle");
       Get(Scenario);
-      -- Set the vehicle type
+      Skip_Line;
+
+      -- Set the vehicle type and run simulation
       case Scenario is
          when 1 =>
-            Run_Luxury_Scenario(lux);
-         when 2 =>
+            Selected_Type := Vehicle_Types.Standard_cars;
             Run_Standard_Scenario(std);
+         when 2 =>  
+            Selected_Type := Vehicle_Types.Luxury_cars;  
+            Run_Luxury_Scenario(lux);
          when others =>
             Put_Line("Invalid vehicle type selected.");
             return;
-      end case;
+         end case;
 
+      -- Prompt for reservation
+      Put_Line("Would you like to reserve a vehicle? (1 = Yes, 2 = No)");
+      Get(User_Choice);
+      Skip_Line;
+   if User_Choice = 1 then
+      -- Input name only
+      Vehicle_Reservation.Input_Driver_Name(Res);
+      -- Input credit card number
+      Vehicle_Reservation.Input_Credit_Card(Res);
+      Skip_Line;
 
+      -- Set car type based on what user selected
+      Res.Car_Type := Selected_Type;
+      if Selected_Type = Vehicle_Types.Standard_cars then
+         Res.Rental_Fee := Vehicle_Constants.Standard_Rental_Cost;
+         New_Line;
+         Res.MPG := Vehicle_Constants.Standard_MPG;
+         Put_Line("Customer: " & Res.Name(1 .. Res.Last));
+         New_Line;
+         Put_Line("Credit Card: " & Res.Credit_Card);
+         Put_Line("Car Type: " & Vehicle_Types.Vehicle_Type'Image(Res.Car_Type));
+         Put("Rental Fee: $");
+         Float_IO.Put(Res.Rental_Fee, Fore => 1, Aft => 2, Exp => 0);
+         New_Line;
+         Put("MPG: ");
+         Float_IO.Put(Res.MPG, Fore => 1, Aft => 1, Exp => 0);
+         New_Line;
+         Put_Line("Reservation complete.");
+      elsif Selected_Type = Vehicle_Types.Luxury_cars then
+         Res.Rental_Fee := Vehicle_Constants.Luxury_Rental_Cost;
+         New_Line;
+         Res.MPG := Vehicle_Constants.Luxury_MPG;
+         Put_Line("Customer: " & Res.Name(1 .. Res.Last));
+         New_Line;
+         Put_Line("Credit Card: " & Res.Credit_Card);
+         Put_Line("Car Type: " & Vehicle_Types.Vehicle_Type'Image(Res.Car_Type));
+         Put("Rental Fee: $");
+         Float_IO.Put(Res.Rental_Fee, Fore => 1, Aft => 2, Exp => 0);
+         New_Line;
+         Put("MPG: ");
+         Float_IO.Put(Res.MPG, Fore => 1, Aft => 1, Exp => 0);
+         New_Line;
+         Put_Line("Reservation complete.");
+      else
+         Put_Line("Invalid vehicle type selected.");
+         return;
+      end if;
+      -- Output confirmatio     
+   else
+      Put_Line("Exiting the program.");
+      return;
+   end if;
+end Run_System_Interface;
 
-   end Run_System_Interface;
-   
  
 end System_Interface;
