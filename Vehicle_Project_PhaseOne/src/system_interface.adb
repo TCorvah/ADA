@@ -187,7 +187,6 @@ package body System_Interface is
             Put_Line("Invalid vehicle type selected.");
             return;
          end case;
-
       -- Prompt for reservation
       Put_Line("Would you like to reserve a vehicle? (1 = Yes, 2 = No)");
       Get(User_Choice);
@@ -198,7 +197,6 @@ package body System_Interface is
       -- Input credit card number
       Vehicle_Reservation.Input_Credit_Card(Res);
       Skip_Line;
-
       -- Set car type based on what user selected
       Res.Car_Type := Selected_Type;
       if Selected_Type = Vehicle_Types.Standard_cars then
@@ -215,7 +213,7 @@ package body System_Interface is
          Put("MPG: ");
          Float_IO.Put(Res.MPG, Fore => 1, Aft => 1, Exp => 0);
          New_Line;
-         Put_Line("Reservation complete.");
+         Put_Line("Congratulation!"  & Res.Name(1 .. Res.Last) & ", your reservation is complete.");
       elsif Selected_Type = Vehicle_Types.Luxury_cars then
          Res.Rental_Fee := Vehicle_Constants.Luxury_Rental_Cost;
          New_Line;
@@ -230,7 +228,7 @@ package body System_Interface is
          Put("MPG: ");
          Float_IO.Put(Res.MPG, Fore => 1, Aft => 1, Exp => 0);
          New_Line;
-         Put_Line("Reservation complete.");
+         Put_Line("Congratulation!"  & Res.Name(1 .. Res.Last) & ", your reservation is complete.");
       else
          Put_Line("Invalid vehicle type selected.");
          return;
