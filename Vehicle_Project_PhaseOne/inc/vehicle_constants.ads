@@ -1,7 +1,5 @@
-
+with Vehicle_Types; use Vehicle_Types;
 package Vehicle_Constants is
-   type Dollar_amount is delta 0.01 digits 7;
-
 
    -- Constants for vehicle types
    Luxury_Rental_Cost : constant Float := 100.0; -- Cost per day for luxury rental    
@@ -10,8 +8,5 @@ package Vehicle_Constants is
    Luxury_MPG : constant Float := 20.0; -- Miles per gallon for luxury vehicle
    Standard_MPG : constant Float := 30.0; -- Miles per gallon for standard vehicle
    Threshold : constant Float := 10.0;
-
-
-
 
 end Vehicle_Constants;

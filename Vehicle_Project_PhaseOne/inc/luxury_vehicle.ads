@@ -1,7 +1,14 @@
 with Radar_Systems, Sensor_System, Vehicle_System, Vehicle_Types;
 
-
-
+-- This package defines the Luxury Vehicle type and its associated procedures.
+-- It extends the base Vehicle class and includes additional features such as
+-- radar and sensor systems for enhanced functionality.
+-- The package provides procedures for updating door status, enabling object detection,
+-- reducing speed based on object distance, and checking if the door is closed.
+-- It also includes a procedure to attempt moving the vehicle and a function to turn off the engine.
+-- The Luxury Vehicle type is defined as a record that includes the base vehicle attributes
+-- along with additional attributes specific to luxury vehicles, such as cost and miles per gallon.
+-- The package is designed to be used in conjunction with the Vehicle_System and Vehicle_Types packages.
 package Luxury_Vehicle is
 
    -- Luxury Vehicle Type (Extends the base class)
@@ -10,8 +17,7 @@ package Luxury_Vehicle is
       Car_Radar : Radar_Systems.Radar;
       luxury_cost : Float := 100.0;
       miles_gallon : Float := 40.0;
-      Lux_Model : Vehicle_Types.Vehicle_Type := Vehicle_Types.Luxury;
-   
+      Lux_Model : Vehicle_Types.Vehicle_Type := Vehicle_Types.Luxury_cars;
    end record;
 
 
@@ -47,7 +53,6 @@ package Luxury_Vehicle is
    -- Purpose  : checks if the door is closed
    -- Input : Uses internal state of sensor
    -- Output : status of doors
-
    function is_Door_Closed(Lux_Car : in out Luxury_Car) return Boolean;
 
    --------------------------------------------------------------
@@ -57,8 +62,20 @@ package Luxury_Vehicle is
    -- Output : 
    procedure Attempt_Move(Lux_Car : in out Luxury_Car; Threshold : in Float);
 
+
+   --------------------------------------------------------------
+   -- function : Vehicle_Mobile
+   -- Purpose  : checks if the car is in motion
+   -- Input : Uses internal state of sensor
+   -- Output : status of doors
    overriding function Vehicle_Mobile(Lux_Car : in out Luxury_Car) return Boolean;
 
+
+   --------------------------------------------------------------
+   -- procedure : Turn_Off_Engine
+   -- Purpose  : checks if the car is in motion
+   -- Input : Uses internal state of sensor
+   -- Output : status of door
    procedure Turn_Off_Engine(Lux_Car : in out Luxury_Car);
 
 

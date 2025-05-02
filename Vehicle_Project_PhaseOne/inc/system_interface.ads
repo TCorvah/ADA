@@ -8,16 +8,23 @@ with Vehicle_Types; use Vehicle_Types;
 
 package System_Interface is
 
-   -- Declare the vehicle type
-   -- Luxury vehicle type
+   -- This package provides the system interface for the vehicle project.
+   -- It includes procedures for running the luxury vehicle interface, and 
+   -- the standard vehicle interface, and activating the time of day.
+   -- It also includes a procedure for running the system interface.
+   -- The package uses Ada.Text_IO for input and output operations.
+   -- The package is designed to be used in the main program of the vehicle project.
+   
    Selected_Vehicle : Vehicle_Types.Vehicle_Type;
   
 
 
    -- Procedure to run the system interface
    procedure Run_System_Interface( Selected_Type : in out Vehicle_Types.Vehicle_Type);
+   
    -- Procedure to run the luxury vehicle interface
    procedure Run_Luxury_Scenario( Vehicles : in out Luxury_Vehicle.Luxury_Car);
+   
    -- Procedure to run the standard vehicle interface    
    procedure Run_Standard_Scenario( Vehicles : in out Standard_Vehicle.Standard);
 
