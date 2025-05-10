@@ -48,23 +48,14 @@ package Radar_Systems is
    -- The procedure is designed to be modular and reusable, allowing for easy integration with other vehicle systems.
    procedure Deactivate_Radar(R : in out Radar);
 
-   -- Procedure to detect objects using the radar system
-   -- This procedure checks the distance to the detected object and sets the object detection status accordingly.
-   -- The procedure is called to determine if the vehicle can move based on the radar input.
+   function Is_Clear_To_Move(Radar_Data : in Radar; Threshold : Float) return Boolean;
+
+   -- Procedure to simulate radar scan
+   -- This procedure simulates the radar scan by generating random distances and angles.
+   -- The procedure is called to test the radar system's functionality and behavior.
    -- The procedure is used to control the radar system's functionality and behavior.
    -- The procedure is designed to be modular and reusable, allowing for easy integration with other vehicle systems.
-   procedure Detect_Object(Radar_Data : in out Radar; Threshold : Float);
-
-   -- Function to adjust the vehicle's speed based on the radar data
-   -- This function checks the distance to the detected object and adjusts the speed accordingly.
-   -- The function returns the adjusted speed based on the radar input.
-   -- The function is called to determine the vehicle's speed based on the radar data.
-   -- The function is used to control the radar system's functionality and behavior.
-   function Adjust_Speed(Radar_Data : in Radar;  Current_Speed : in Integer) return Integer;
-
-   -- Function to check if the vehicle is clear to move based on the radar data
-   -- This function checks the distance to the detected object and returns a boolean value indicating if the vehicle can move.
-   -- The function is called to determine if the vehicle can move based on the radar input.
-   function Is_Clear_To_Move(Radar_Data : in Radar; Threshold : Float) return Boolean;
+   -- The procedure is written in Ada and follows best practices for software development.
+   procedure Radar_Scan_Simulation;
 
 end Radar_Systems;

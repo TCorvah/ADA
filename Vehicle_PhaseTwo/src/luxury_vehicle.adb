@@ -1,6 +1,7 @@
 with Ada.Text_IO; use Ada.Text_IO;
 with Luxury_Vehicle, Radar_Systems, Sensor_System, Vehicle_System;
-use Vehicle_System;
+use Vehicle_System;  use Radar_Systems;  use Sensor_System;
+with Radar_Systems;
 package body  Luxury_Vehicle is
 
    -- Function to check if the door is closed         
@@ -82,7 +83,7 @@ package body  Luxury_Vehicle is
          else
             Put_Line("Seatbelt is not fastened");
          end if;     
-            Radar_Systems.Detect_Object(Lux_Car.Car_Radar, Threshold);
+            --Radar_Systems.Detect_Object(Lux_Car.Car_Radar, Threshold);
          if Radar_Systems.Is_Clear_To_Move(Lux_Car.Car_Radar,Threshold ) then  
             -- Check if the vehicle is mobile 
             if Vehicle_Mobile(Lux_Car) then
@@ -108,21 +109,20 @@ package body  Luxury_Vehicle is
    -- The procedure is called when the vehicle is started or when the radar system is activated
    -- The procedure prints the status of the radar system to the console
    -- The procedure is called when the vehicle is started or when the radar system is activated
-   procedure Enable_Object_Detection(Lux_Car : in out Luxury_Car; Object_Threshold : in Float) is
-   Radars : Radar_Systems.Radar := Lux_Car.Car_Radar;
+   procedure Enable_Object_Detection(Lux_Car : in out Luxury_Car) is
    begin
-      Radar_Systems.Detect_Object(Radars, Object_Threshold);
-      Lux_Car.Car_Radar := Radars;  
+      --Radar_Systems.Detect_Object(Radars, Object_Threshold);
+      Radar_Systems.Radar_Scan_Simulation;
    end Enable_Object_Detection;
 
    -- Procedure to reduce speed based on object detection
    -- This procedure uses the radar system to detect objects and adjust speed accordingly
    -- It takes the current speed as input and uses the radar system to determine if the vehicle should slow down
    -- The procedure is called when the vehicle is in motion and an object is detected within a certain range
-   procedure Reduce_Speed(Lux_Car : in out Luxury_Car; Current_Speed : in Float) is
-   begin
-      Sensor_System.Handle_Object_Detection(Vehicle_System.Vehicle(Lux_Car),Current_Speed );
-   end Reduce_Speed;
+   --procedure Reduce_Speed(Lux_Car : in out Luxury_Car; Current_Speed : in Float) is
+   --begin
+      --Sensor_System.Handle_Object_Detection(Vehicle_System.Vehicle(Lux_Car),Current_Speed );
+   --end Reduce_Speed;
 
    -- Procedure to turn off the engine and deactivate the sensor
    -- This procedure stops the engine and deactivates the sensor system

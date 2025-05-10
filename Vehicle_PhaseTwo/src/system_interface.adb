@@ -90,27 +90,28 @@ package body System_Interface is
       -- Set the scenario
       case Scenario is
          when 1 =>
-            Vehicles.Car_Radar.Object_Distance := 0.2; -- 5 meters
+            --Vehicles.Car_Radar.Object_Distance := 0.2; -- 5 meters
             Put_Line("Scenario: Parking Garage");
-            Luxury_Vehicle.Attempt_Move (Vehicles, Vehicles.Car_Radar.Object_Distance);
-            Luxury_Vehicle.Reduce_Speed (Vehicles, Vehicle_Constants.Threshold);
+            --Luxury_Vehicle.Attempt_Move (Vehicles, Vehicles.Car_Radar.Object_Distance);
+            --Luxury_Vehicle.Reduce_Speed (Vehicles, Vehicle_Constants.Threshold);
             Luxury_Vehicle.Turn_Off_Engine (Vehicles);
             Luxury_Vehicle.Update_Door_Status(Vehicles);
+            Enable_Object_Detection(Vehicles);
          when 2 =>
-            Vehicles.Car_Radar.Object_Distance := 110.0; -- 110 meters
+            --Vehicles.Car_Radar.Object_Distance := 110.0; -- 110 meters
             Put_Line("Scenario: Quiet Country Road");
-            Luxury_Vehicle.Attempt_Move (Vehicles, Vehicles.Car_Radar.Object_Distance);
-            Luxury_Vehicle.Reduce_Speed (Vehicles, Vehicle_Constants.Threshold);
+            --Luxury_Vehicle.Attempt_Move (Vehicles, Vehicles.Car_Radar.Object_Distance);
+            --Luxury_Vehicle.Reduce_Speed (Vehicles, Vehicle_Constants.Threshold);
          when 3 =>
-            Vehicles.Car_Radar.Object_Distance := 10.0; -- 10 meters
             Put_Line("Scenario: Busy City Street");
-            Luxury_Vehicle.Attempt_Move (Vehicles, Vehicles.Car_Radar.Object_Distance);
-            Luxury_Vehicle.Reduce_Speed (Vehicles, Vehicle_Constants.Threshold);
+            Enable_Object_Detection(Vehicles);
+            --Vehicles.Car_Radar.Object_Distance := 10.0; -- 10 meters
+        
+            --Luxury_Vehicle.Attempt_Move (Vehicles, Vehicles.Car_Radar.Object_Distance);
+            --Luxury_Vehicle.Reduce_Speed (Vehicles, Vehicle_Constants.Threshold);
          when 4 =>
-            Vehicles.Car_Radar.Object_Distance := 80.8; -- 80 meters
             Put_Line("Scenario: Highway");
-            Luxury_Vehicle.Attempt_Move (Vehicles, Vehicles.Car_Radar.Object_Distance);
-            Luxury_Vehicle.Reduce_Speed (Vehicles, Vehicle_Constants.Threshold);
+         
          when others =>
             Put_Line("Invalid scenario selected.");
             return;

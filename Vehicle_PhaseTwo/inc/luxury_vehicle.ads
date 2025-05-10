@@ -37,16 +37,10 @@ package Luxury_Vehicle is
    -- Input : Uses internal state of threshold detection
    -- Output : alert driver of object in view of certain range
    ------------------------------------------------------------
-   procedure Enable_Object_Detection(Lux_Car : in out Luxury_Car; Object_Threshold : in Float);
+   procedure Enable_Object_Detection(Lux_Car : in out Luxury_Car);
 
    
-   --------------------------------------------------------------------------------
-   -- function : Reduce_Speed
-   -- Purpose  : adjust vehicle speed based on object distance from safe distance
-   -- Input : takes in the current speed and compare with threshold for detection
-   -- Output : alert driver of object in view of certain range
-   ---------------------------------------------------------------------------------
-   procedure Reduce_Speed(Lux_Car : in out Luxury_Car; Current_Speed : in Float);
+
 
    --------------------------------------------------------------
    -- function : is_Door_Closed
