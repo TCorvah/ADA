@@ -65,6 +65,8 @@ package Vehicle_System is
    function Reserve_Vehicle(V :  Vehicle) return Boolean;
 
    procedure Set_Reservation(V : in out Vehicle);
+   procedure Attempt_Move(V : in out Vehicle; Threshold : in Float) is abstract;
+
 
 
 end Vehicle_System;

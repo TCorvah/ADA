@@ -1,5 +1,6 @@
 
-with Sensor_System, Vehicle_System;
+with Sensor_System, Vehicle_System, Radar_Systems;
+
 with Vehicle_Types;
 
 package Standard_Vehicle is
@@ -31,6 +32,7 @@ package Standard_Vehicle is
    
    type Standard is new Vehicle_System.Vehicle with record
       Car_Sensor : Sensor_System.Sensor;
+      Car_Radar : Radar_Systems.Radar;
       Number_Of_Passengers : Integer := 0;
       Model : Vehicle_Types.Vehicle_Type := Vehicle_Types.Standard_cars;
       Cost : Float := 50.0;
@@ -67,6 +69,8 @@ end record;
    -- The function checks the door status and returns True if the door is closed and False otherwise.
    -- The function uses the Car_Sensor attribute of the Standard vehicle type to check the door status.
    function is_Door_Closed(V : in out Standard) return Boolean;
+   procedure Update_Door_Status(Standard_Car : in out Standard);
+   overriding procedure Attempt_Move(Standard_Car : in out Standard; Threshold : in Float);
    
 
 end Standard_Vehicle;

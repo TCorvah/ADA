@@ -54,7 +54,7 @@ package Luxury_Vehicle is
    -- Purpose  : checks if the car is in motion
    -- Input : Uses internal state of sensor
    -- Output : 
-   procedure Attempt_Move(Lux_Car : in out Luxury_Car; Threshold : in Float);
+   overriding procedure Attempt_Move(Lux_Car : in out Luxury_Car; Threshold : in Float);
 
 
    --------------------------------------------------------------
