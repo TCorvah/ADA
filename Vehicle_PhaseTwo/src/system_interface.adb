@@ -13,6 +13,8 @@ with Ada.Strings; use Ada.Strings;
 with Vehicle_Reservation; use Vehicle_Reservation;
 with Timing_Controller; use Timing_Controller;
 
+with Ada.Numerics.Float_Random; use Ada.Numerics.Float_Random;
+
 
 package body System_Interface is
    -- This package implements the system interface for the vehicle project.
@@ -24,6 +26,7 @@ package body System_Interface is
    -- The package provides a set of procedures to manage the vehicle system and ensure the vehicle's safety.
 
    package Float_IO is new Ada.Text_IO.Float_IO(Float);
+   
 
    -- Procedure to activate the time of day
    -- This procedure prompts the user for the time of day and sets the visibility accordingly.
@@ -36,7 +39,7 @@ package body System_Interface is
    begin
       -- Prompt the user for the time of day
       Put_Line("=====================================");
-      Put_Line("Vehicle Project - Phase One");
+      Put_Line("Vehicle Project - Phase Two");
       Put_Line("Enter the time of day: ");
       Put_Line("1 = Night, 2 = Day");
       Get(TOD);
@@ -58,13 +61,17 @@ package body System_Interface is
       -- Declare variables
       Scenario : Integer;
       SeatBelt : Integer;
-
-      -- MPG : Float;    
+      my_radar : Radar_Systems.Radar;
+      -- Random distance for object detection
+ 
+      Random_Distance : Float;
+ 
    begin
       Put_Line("Car Type: " & Trim(Vehicle_Type'Image(Vehicles.Lux_Model),Right));
       Put("Rental Fee: $");
       Float_IO.Put(Vehicles.luxury_cost, Fore => 1, Aft => 2, Exp => 0);
       New_Line;
+
       Put("MPG: ");
       Float_IO.Put(Vehicles.miles_gallon, Fore => 1, Aft => 1, Exp => 0);
       New_Line;
@@ -80,6 +87,7 @@ package body System_Interface is
       Put_Line("3. Unknown");
       Put_Line("=====================================");
       Get(SeatBelt);
+      -- Set the seatbelt status based on user input
       case SeatBelt is
          when 1 =>
             Vehicles.Car_Sensor.Seatbelt_On := True; -- Seatbelt fastened
@@ -104,7 +112,7 @@ package body System_Interface is
       Sensor_System.Check_Visibility(Vehicles.Car_Sensor);
  
       Sensor_System.Update_Headlights(Vehicles.Car_Sensor);
-      
+    
 
       -- Prompt the user for the scenario
       Put_Line("Select the Scenario: ");
@@ -117,9 +125,19 @@ package body System_Interface is
       case Scenario is
          when 1 =>
             Put_Line("Scenario: Parking Garage");
-            Luxury_Vehicle.Attempt_Move(Vehicles, Vehicles.Car_Radar.Object_Distance);
+            Activate_Radar(Vehicles.Car_Radar);
+            --Ada.Numerics.Float_Random.Reset(Gen); 
+
+            --Random_Distance := Ada.Numerics.Float_Random.Random(Gen) * 99.5 + 0.5; -- Random distance between 0.5 and 100 meters
+           -- Put_Line ( "Random Distance: " & Float'Image(Random_Distance));
+            --Vehicles.Car_Radar.Object_Distance := Random_Distance;
+            --Luxury_Vehicle.Attempt_Move(Vehicles,Random_Distance);
+
+            Radar_Systems.Radar_Scan_Garage_Simulation;
+            -- Simulate door toggle
             --Luxury_Vehicle.Update_Door_Status(Vehicles);
-            Enable_Object_Detection(Vehicles);  
+            --Enable_Object_Detection(Vehicles); 
+            Deactivate_Sensor(Vehicles.Car_Sensor); 
             Deactivate_Radar(Vehicles.Car_Radar);
          when 2 =>
             --Vehicles.Car_Radar.Object_Distance := 110.0; -- 110 meters

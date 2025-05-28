@@ -27,6 +27,7 @@ package body Timing_Controller is
             end Shutdown;
          end select;
          if Termin then
+            Put_Line("Headlight timer has been terminated.");
             exit;
          end if;
             if Requested then

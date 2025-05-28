@@ -150,18 +150,16 @@ package body Radar_Systems is
          Distance := Random_Distance; -- Generate a random distance for the scan
          Put_Line ("Radar: Scanning at Angle: " & Float'Image(Angle) & " degrees, Distance: " & Float'Image(Distance) & " meters");
          -- Determine the sector based on the random angle
-         Sector := Get_Sector_Angle(Random_Angle); -- Get the sector based on the random angle
+         Sector := Get_Sector_Angle(Angle); -- Get the sector based on the random angle
          Put(", Sector Center Angle: ");
          Put(Float'Image(Sector_Center_Angle(Sector)));
          New_Line;
        
-         Put("Scan #");
-         Put(Integer'Image(Scan_Count + 1));
-         Put ("Angle");
-         Put (Float'Image(Angle));
-         Put (" degrees, Distance: ");
-         Put (Float'Image(Distance));
-         Put_Line (" meters, Sector:  ");
+         Put_Line ("Scan #" & Integer'Image(Scan_Count + 1) &
+          ": Angle = " & Float'Image(Angle) &
+          ", Distance = " & Float'Image(Distance) &
+          ", Sector = " & Radar_Sector'Image(Sector));
+
          case Sector is
             when Radar_Systems.Front =>
                Put_Line ("Front Sector");
