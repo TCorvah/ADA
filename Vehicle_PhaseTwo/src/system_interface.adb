@@ -48,7 +48,7 @@ package body System_Interface is
             Time.Visibility := Day; -- Day
             Put_Line("Time of day: Day");
          when others =>
-            Put_Line("Invalid time of day. Please enter a value between 0.0 and 1.0.");
+            Put_Line("Invalid time of day. Please enter option 1 or 2.");
             return;
       end case;
    end Activate_TOD;
@@ -57,7 +57,8 @@ package body System_Interface is
    procedure Run_Luxury_Scenario( Vehicles : in out Luxury_Vehicle.Luxury_Car) is
       -- Declare variables
       Scenario : Integer;
-      Detected_Weight : Float;  
+      SeatBelt : Integer;
+
       -- MPG : Float;    
    begin
       Put_Line("Car Type: " & Trim(Vehicle_Type'Image(Vehicles.Lux_Model),Right));
@@ -67,18 +68,43 @@ package body System_Interface is
       Put("MPG: ");
       Float_IO.Put(Vehicles.miles_gallon, Fore => 1, Aft => 1, Exp => 0);
       New_Line;
+
+      Put_Line ("User enters Vehicle. Weight detected");
+      Put_Line ("Engine is running");
       Activate_TOD(Vehicles.Car_Sensor);
-      -- Set visibility based on the time of day
+  
+      -- Prompt the user for the Seatbelt status
+      Put_Line ("Enter the seatbelt status : ");
+      Put_Line("1. Fastened");
+      Put_Line("2. Not Fastened");
+      Put_Line("3. Unknown");
+      Put_Line("=====================================");
+      Get(SeatBelt);
+      case SeatBelt is
+         when 1 =>
+            Vehicles.Car_Sensor.Seatbelt_On := True; -- Seatbelt fastened
+            Put_Line("Seatbelt status: Fastened");
+         when 2 =>
+            Vehicles.Car_Sensor.Seatbelt_On := False; -- Seatbelt not fastened
+            Put_Line("Seatbelt status: Not Fastened");
+         when 3 =>
+            Vehicles.Car_Sensor.Seatbelt_On := False; -- Unknown status, assume not fastened
+            Put_Line("Seatbelt status: Unknown");
+         when others =>
+            Put_Line("Invalid seatbelt status selected.");
+            return;
+      end case;
+          -- Set visibility based on the time of day
+      if not Vehicles.Car_Sensor.Seatbelt_On then
+         Put_Line("Warning: Seatbelt is not fastened. Vehicle will not move.");
+         Vehicles.Speed := 0.0;
+         Vehicles.Is_Moving := False;
+         return;
+      end if;
       Sensor_System.Check_Visibility(Vehicles.Car_Sensor);
  
       Sensor_System.Update_Headlights(Vehicles.Car_Sensor);
-     
-      -- Prompt the user for the detected weight
-      Put_Line("Enter the detected weight (in kg): ");
-      Get(Detected_Weight);
-      -- Set detected weight
-      Vehicles.Car_Sensor.Detected_Weight := Detected_Weight;
-      Vehicles.Car_Sensor.Seatbelt_On := True; -- Simulate seatbelt status
+      
 
       -- Prompt the user for the scenario
       Put_Line("Select the Scenario: ");
@@ -90,13 +116,11 @@ package body System_Interface is
       -- Set the scenario
       case Scenario is
          when 1 =>
-            --Vehicles.Car_Radar.Object_Distance := 0.2; -- 5 meters
             Put_Line("Scenario: Parking Garage");
-            --Luxury_Vehicle.Attempt_Move (Vehicles, Vehicles.Car_Radar.Object_Distance);
-            --Luxury_Vehicle.Reduce_Speed (Vehicles, Vehicle_Constants.Threshold);
-            Luxury_Vehicle.Turn_Off_Engine (Vehicles);
-            Luxury_Vehicle.Update_Door_Status(Vehicles);
-            Enable_Object_Detection(Vehicles);
+            Luxury_Vehicle.Attempt_Move(Vehicles, Vehicles.Car_Radar.Object_Distance);
+            --Luxury_Vehicle.Update_Door_Status(Vehicles);
+            Enable_Object_Detection(Vehicles);  
+            Deactivate_Radar(Vehicles.Car_Radar);
          when 2 =>
             --Vehicles.Car_Radar.Object_Distance := 110.0; -- 110 meters
             Put_Line("Scenario: Quiet Country Road");

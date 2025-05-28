@@ -1,5 +1,7 @@
 with Ada.Text_IO; use Ada.Text_IO;
 with Sensor_System, Vehicle_System;
+with Vehicle_Types;use Vehicle_Types;
+with Radar_Systems; use Radar_Systems;
 use Vehicle_System;
 
 package body Standard_Vehicle is 
@@ -64,6 +66,77 @@ package body Standard_Vehicle is
    begin
       return V.Current_Door_Status = Vehicle_System.Door_Closed;
    end is_Door_Closed;
+
+   -- Procedure to check the door status  
+   -- This procedure updates the door status of the luxury car
+   -- It takes a Luxury_Car object as input and checks the door status
+   -- The procedure uses the Sensor_System package to access the door status
+   -- The procedure updates the Current_Door_Status attribute of the Luxury_Car object
+   -- The procedure prints the door status to the console
+   -- The procedure is called when the vehicle is started or when the door status changes
+   procedure Update_Door_Status(Standard_Car : in out Standard) is
+   begin
+      if Sensor_System.Is_Door_Open(Standard_Car.Car_Sensor) then
+         Standard_Car.Current_Door_Status := Vehicle_System.Door_Open;
+         Put_Line("vehicle door is open");
+      else
+         Standard_Car.Current_Door_Status := Vehicle_System.Door_Closed;
+         Put_Line("Door is closed");
+      end if;      
+   end Update_Door_Status;
+
+   procedure Attempt_Move(Standard_Car : in out Standard; Threshold : Float) is
+   begin
+   -- Simulate door toggle
+   Sensor_System.Toggle_Door(Standard_Car.Car_Sensor);
+   Sensor_System.Toggle_Door(Standard_Car.Car_Sensor); 
+
+   -- Start engine
+   Vehicle_System.Start_Engine(Vehicle_System.Vehicle(Standard_Car));
+   Sensor_System.Activate_Sensor(Standard_Car.Car_Sensor);
+   Update_Door_Status(Standard_Car);
+
+   -- Check conditions
+   declare
+      Door_Closed  : Boolean := is_Door_Closed(Standard_Car);
+      Occupied     : Boolean := Sensor_System.Seat_Occupied(Standard_Car.Car_Sensor);
+      Seatbelt_On  : Boolean := Standard_Car.Car_Sensor.Seatbelt_On;
+      Clear_Path   : Boolean := Radar_Systems.Is_Clear_To_Move(Standard_Car.Car_Radar, Threshold);
+   begin
+
+      -- Visibility check (applies in both modes)
+      Sensor_System.Check_Visibility(Standard_Car.Car_Sensor);
+
+      if not Door_Closed then
+         Put_Line("Warning: Door is open.");
+      end if;
+      if not Occupied then
+         Put_Line("Warning: Seat not occupied.");
+      end if;
+      if not Seatbelt_On then
+         Put_Line("Warning: Seatbelt is not fastened.");
+      end if;
+      if not Clear_Path then
+         Put_Line("Warning: Obstacle detected.");
+      end if;
+        
+            delay 3.0;
+            Put_Line("Standard: Vehicle is in motion regardless of above warnings.");
+      end;
+
+      -- Final movement decision
+      if Vehicle_Mobile(Standard_Car) then
+         Standard_Car.Is_Moving := True;
+         Put_Line("Vehicle is moving.");
+      else
+         Standard_Car.Speed := 0.0;
+         Standard_Car.Is_Moving := False;
+         Put_Line("Vehicle failed to start moving.");
+      end if;
+   
+   end Attempt_Move;
+
+
    
 
 end Standard_Vehicle;

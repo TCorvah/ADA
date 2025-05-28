@@ -1,7 +1,9 @@
 with Ada.Text_IO; use Ada.Text_IO;
 with Luxury_Vehicle, Radar_Systems, Sensor_System, Vehicle_System;
 use Vehicle_System;  use Radar_Systems;  use Sensor_System;
+with Vehicle_Types;use Vehicle_Types;
 with Radar_Systems;
+with Vehicle_Types;
 package body  Luxury_Vehicle is
 
    -- Function to check if the door is closed         
@@ -37,7 +39,7 @@ package body  Luxury_Vehicle is
    begin
       if Sensor_System.Is_Door_Open(Lux_Car.Car_Sensor) then
          Lux_Car.Current_Door_Status := Vehicle_System.Door_Open;
-         Put_Line("Door is open");
+         Put_Line("Door is open vehicle cannot move");
       else
          Lux_Car.Current_Door_Status := Vehicle_System.Door_Closed;
          Put_Line("Door is closed");
@@ -51,55 +53,69 @@ package body  Luxury_Vehicle is
    -- The procedure uses the Radar_Systems package to check for objects in the vehicle's path
    -- The procedure prints the status of the vehicle to the console
    -- The procedure is called when the vehicle is started or when the door status changes
+
    procedure Attempt_Move(Lux_Car : in out Luxury_Car; Threshold : Float) is
    begin
-      Sensor_System.Toggle_Door(Lux_Car.Car_Sensor);
-      Sensor_System.Toggle_Door(Lux_Car.Car_Sensor); 
-      -- Start the engine
-      Vehicle_System.Start_Engine(Vehicle_System.Vehicle(Lux_Car));
-   
-      -- activate Sensor
-      Sensor_System.Activate_Sensor(Lux_Car.Car_Sensor);   
+   -- Simulate door toggle
+   Sensor_System.Toggle_Door(Lux_Car.Car_Sensor);
+   Sensor_System.Toggle_Door(Lux_Car.Car_Sensor); 
 
-      -- update door status
-      Update_Door_Status(Lux_Car);
+   -- Start engine
+   Vehicle_System.Start_Engine(Vehicle_System.Vehicle(Lux_Car));
+   Sensor_System.Activate_Sensor(Lux_Car.Car_Sensor);
+   Update_Door_Status(Lux_Car);
 
-      -- check if all doors are close
-      if is_Door_Closed(Lux_Car) then
-         -- check if the vehicle is occupied
-         if Sensor_System.Seat_Occupied(Lux_Car.Car_Sensor) then
-            Put_Line("Vehicle is occupied");
-         else
-            Put_Line("Vehicle is not occupied");
-         end if;
-         
-         -- check if visibility is good
-         Sensor_System.Check_Visibility(Lux_Car.Car_Sensor);
-      
-      -- check if seatbelt fasten
-         if Sensor_System.Seat_Occupied(Lux_Car.Car_Sensor) then
-            Put_Line ("Sensor: Seat is detected with (weight: " & Float 'Image(Lux_Car.Car_Sensor.Detected_Weight) & "kg).");
-            Sensor_System.Check_Seatbelt(Lux_Car.Car_Sensor); 
-         else
-            Put_Line("Seatbelt is not fastened");
-         end if;     
-            --Radar_Systems.Detect_Object(Lux_Car.Car_Radar, Threshold);
-         if Radar_Systems.Is_Clear_To_Move(Lux_Car.Car_Radar,Threshold ) then  
-            -- Check if the vehicle is mobile 
-            if Vehicle_Mobile(Lux_Car) then
-               Put_Line("Vehicle is moving");
-            else
-               Lux_Car.Speed := 0.0;
-               Lux_Car.Is_Moving := False;
-               Put_Line("Vehicle is not moving");
-            end if;   
-            Lux_Car.Is_Moving := True;
-            Put_Line(" Vehicle is now safe to move");
-         end if;
-      else
-      Put_Line("Cannot move.");
+   -- Check conditions
+   declare
+      Door_Closed  : Boolean := is_Door_Closed(Lux_Car);
+      Occupied     : Boolean := Sensor_System.Seat_Occupied(Lux_Car.Car_Sensor);
+      Seatbelt_On  : Boolean := Lux_Car.Car_Sensor.Seatbelt_On;
+      Clear_Path   : Boolean := Radar_Systems.Is_Clear_To_Move(Lux_Car.Car_Radar, Threshold);
+   begin
+
+      -- Visibility check (applies in both modes)
+      Sensor_System.Check_Visibility(Lux_Car.Car_Sensor);
+      Radar_Systems.Activate_Radar(Lux_Car.Car_Radar);
+
+      if not Door_Closed then
+         Put_Line("Warning: Door is open. Vehicle will not move.");
+         Lux_Car.Speed := 0.0;
+         Lux_Car.Is_Moving := False;
+         return;
       end if;
-   end Attempt_Move;
+      if not Occupied then
+         Put_Line("Warning: Seat not occupied. Vehicle will not move.");
+         Lux_Car.Speed := 0.0;
+         Lux_Car.Is_Moving := False;
+         Lux_Car.Car_Sensor.Seatbelt_On := False; -- Ensure seatbelt is off if no occupant
+         return;
+      end if;
+      if not Seatbelt_On then
+         Put_Line("Warning: Seatbelt is not fastened. Vehicle will not move.");
+         Lux_Car.Speed := 0.0;
+         Lux_Car.Is_Moving := False;
+         Lux_Car.Car_Sensor.Seatbelt_On := False; -- Ensure seatbelt is off if not fastened
+         return;
+      end if;
+      if not Clear_Path then
+         Put_Line("Warning: Obstacle detected too close. Vehicle will not move.");  
+         Lux_Car.Speed := 0.0;
+         Lux_Car.Is_Moving := False;
+         return;
+      end if;
+     
+      -- Final movement decision
+      if Vehicle_Mobile(Lux_Car) then
+         Lux_Car.Is_Moving := True;
+         Put_Line("Vehicle is moving.");
+      else
+         Lux_Car.Speed := 0.0;
+         Lux_Car.Is_Moving := False;
+         Put_Line("Vehicle failed to start moving.");
+      end if;
+   end;
+end Attempt_Move;
+
 
    -- Procedure to enable object detection
    -- This procedure enables object detection using the radar system
