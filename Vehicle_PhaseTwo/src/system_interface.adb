@@ -75,7 +75,7 @@ package body System_Interface is
       Put("MPG: ");
       Float_IO.Put(Vehicles.miles_gallon, Fore => 1, Aft => 1, Exp => 0);
       New_Line;
-
+      Sensor_System.Activate_Sensor(Vehicles.Car_Sensor);
       Put_Line ("User enters Vehicle. Weight detected");
       Put_Line ("Engine is running");
       Activate_TOD(Vehicles.Car_Sensor);
@@ -126,6 +126,17 @@ package body System_Interface is
          when 1 =>
             Put_Line("Scenario: Parking Garage");
             Activate_Radar(Vehicles.Car_Radar);
+            declare
+               Gen : Ada.Numerics.Float_Random.Generator;
+               Random_Distance : Float;
+            begin
+               -- Initialize the random number generator
+               Ada.Numerics.Float_Random.Reset(Gen);
+               -- Generate a random distance between 0.5 and 100 meters
+               Random_Distance := Ada.Numerics.Float_Random.Random(Gen) * 99.5 + 0.5;
+               Put_Line("Random Distance: " & Float'Image(Random_Distance));
+               Vehicles.Car_Radar.Object_Distance := Random_Distance;
+            end;
             --Ada.Numerics.Float_Random.Reset(Gen); 
 
             --Random_Distance := Ada.Numerics.Float_Random.Random(Gen) * 99.5 + 0.5; -- Random distance between 0.5 and 100 meters
@@ -137,8 +148,8 @@ package body System_Interface is
             -- Simulate door toggle
             --Luxury_Vehicle.Update_Door_Status(Vehicles);
             --Enable_Object_Detection(Vehicles); 
-            Deactivate_Sensor(Vehicles.Car_Sensor); 
-            Deactivate_Radar(Vehicles.Car_Radar);
+            Turn_Off_Engine(Vehicles);
+   
          when 2 =>
             --Vehicles.Car_Radar.Object_Distance := 110.0; -- 110 meters
             Put_Line("Scenario: Quiet Country Road");

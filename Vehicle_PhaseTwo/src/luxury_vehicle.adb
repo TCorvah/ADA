@@ -128,7 +128,7 @@ end Attempt_Move;
    procedure Enable_Object_Detection(Lux_Car : in out Luxury_Car) is
    begin
       --Radar_Systems.Detect_Object(Radars, Object_Threshold);
-      Radar_Systems.Radar_Scan_Simulation;
+      Radar_Systems.Radar_Scan_Highway_Simulation;
    end Enable_Object_Detection;
 
    -- Procedure to reduce speed based on object detection

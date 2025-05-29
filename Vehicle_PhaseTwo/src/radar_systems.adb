@@ -40,7 +40,6 @@ package body Radar_Systems is
       end loop;
       while Norm >= 360.0 loop
          Norm := Norm - 360.0;
-         return Angle + 360.0;
       end loop;
       return Norm;
    end Normalize_Angle;
@@ -77,7 +76,7 @@ package body Radar_Systems is
    end Sector_Center_Angle;
 
 
-   procedure Radar_Scan_Simulation is
+   procedure Radar_Scan_Highway_Simulation is
       Scan_Count : Float := 0.0;
       Max_Scans : constant Float := 5.0;
       Gen : Generator;
@@ -122,7 +121,7 @@ package body Radar_Systems is
          end if;
       end loop;
       Put_Line ("Radar: Scan completed.");
-   end Radar_Scan_Simulation;
+   end Radar_Scan_Highway_Simulation;
 
    procedure Radar_Scan_Garage_Simulation is
       Scan_Count : Integer := 0;
@@ -162,13 +161,13 @@ package body Radar_Systems is
 
          case Sector is
             when Radar_Systems.Front =>
-               Put_Line ("Front Sector");
+               Put_Line ("Front Sector Scan for objects:");
             when Radar_Systems.Rear =>
-               Put_Line ("Rear Sector");
+               Put_Line ("Rear Sector Scan for objects: ");
             when Radar_Systems.Left =>
-               Put_Line ("Left Sector");
+               Put_Line ("Left Sector Scan for objects: ");
             when Radar_Systems.Right =>
-               Put_Line ("Right Sector");
+               Put_Line ("Right Sector Scan for objects: ");
          end case;
          --Distance checks
          if Distance <=  10.0 then
@@ -186,7 +185,6 @@ package body Radar_Systems is
             Put_Line ("Radar: Garage scan completed.");
          end if;
       end loop;
-      Put_Line ("Radar: Garage scan completed.");
    end Radar_Scan_Garage_Simulation;
       
    
