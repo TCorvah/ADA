@@ -178,6 +178,8 @@ package body Radar_Systems is
             Put_Line ("Radar: Caution! Object detected at distance: " & Float'Image(Distance) & " meters, angle: " & Float'Image(Angle));
          else
             Put_Line ("Radar: >> Path Clear: ");
+            Put_Line ("No objects detected in the " & Radar_Sector'Image(Sector) & " sector.");
+            Put_Line ("Vehicle can move freely");
          end if;
          delay 2.5; -- Simulate time delay for radar scan
          Scan_Count := Scan_Count + 1; -- Increment the scan count

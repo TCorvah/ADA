@@ -57,7 +57,7 @@ package body Sensor_System is
    -- The function returns True if the detected weight is greater than 20kg, indicating that the seat is occupied.
    function Seat_Occupied(S : Sensor) return Boolean is
    begin
-      return S.Detected_Weight > 20.0; -- payload threshold for seatbelt warning is 20kg
+      return S.Detected_Weight >= Vehicle_Constants.Minimum_Weight_Occupancy; -- payload threshold for seatbelt warning is 20kg
    end Seat_Occupied;
 
    -- This procedure toggles the door status by changing the Door_Open attribute of the Sensor object.
@@ -85,7 +85,8 @@ package body Sensor_System is
    -- If the seatbelt is fastened, it prints "Sensor: Seatbelt is fastened", otherwise it prints "Sensor: Seatbelt is not fastened".
    procedure Check_Seatbelt(S : in Sensor) is 
    begin
-      if S.Seatbelt_On then
+      if S.Seatbelt_On = True then
+       
          Put_Line ("Sensor: Seatbelt is fastened");
       else
           Put_Line ("Sensor: Seatbelt is not  fastened");
@@ -102,9 +103,9 @@ package body Sensor_System is
    -- If the seat is empty, it prints "Sensor: Seat is empty".
    procedure Check_Seat(S : in Sensor) is
    begin
-      if Seat_Occupied (S) then
-         Put_Line ("Sensor: Seat is occupied (weight: " & Float 'Image(S.Detected_Weight) & "kg).");
-         Check_Seatbelt (S);
+      if Seat_Occupied(S) then
+         Check_Seatbelt(S);
+         Put_Line ("Sensor: Seat is occupied , human detected");
       else
          Put_Line ("Sensor: Seat is empty.");
       end if;

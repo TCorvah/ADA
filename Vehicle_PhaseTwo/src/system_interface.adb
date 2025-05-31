@@ -62,6 +62,8 @@ package body System_Interface is
       Scenario : Integer;
       SeatBelt : Integer;
       my_radar : Radar_Systems.Radar;
+      my_sensor : Sensor_System.Sensor;
+   
       -- Random distance for object detection
  
       Random_Distance : Float;
@@ -76,6 +78,15 @@ package body System_Interface is
       Float_IO.Put(Vehicles.miles_gallon, Fore => 1, Aft => 1, Exp => 0);
       New_Line;
       Sensor_System.Activate_Sensor(Vehicles.Car_Sensor);
+      if Sensor_System.Seat_Occupied(Vehicles.Car_Sensor) then
+         Put_Line("Seat is occupied. Seatbelt confirmation will confirm human.");
+      else
+         Put_Line("Seat is not occupied. Vehicle will not move.");
+         Vehicles.Speed := 0.0;
+         Vehicles.Is_Moving := False;
+         return;
+      end if;
+
       Put_Line ("User enters Vehicle. Weight detected");
       Put_Line ("Engine is running");
       Activate_TOD(Vehicles.Car_Sensor);
@@ -91,7 +102,13 @@ package body System_Interface is
       case SeatBelt is
          when 1 =>
             Vehicles.Car_Sensor.Seatbelt_On := True; -- Seatbelt fastened
+            Vehicles.Engine_On := True; -- Engine is running
+            my_sensor.Door_Open := False; -- Door is closed
+
             Put_Line("Seatbelt status: Fastened");
+            Put_Line ("Sensor: Human weight confirmed");
+            
+         -- Seatbelt fastened
          when 2 =>
             Vehicles.Car_Sensor.Seatbelt_On := False; -- Seatbelt not fastened
             Put_Line("Seatbelt status: Not Fastened");
@@ -109,6 +126,7 @@ package body System_Interface is
          Vehicles.Is_Moving := False;
          return;
       end if;
+
       Sensor_System.Check_Visibility(Vehicles.Car_Sensor);
  
       Sensor_System.Update_Headlights(Vehicles.Car_Sensor);
@@ -142,12 +160,15 @@ package body System_Interface is
             --Random_Distance := Ada.Numerics.Float_Random.Random(Gen) * 99.5 + 0.5; -- Random distance between 0.5 and 100 meters
            -- Put_Line ( "Random Distance: " & Float'Image(Random_Distance));
             --Vehicles.Car_Radar.Object_Distance := Random_Distance;
-            --Luxury_Vehicle.Attempt_Move(Vehicles,Random_Distance);
+            
+            Enable_Object_Detection(Vehicles);
+            Vehicles.Is_Moving := True; -- Set the vehicle to moving state
+            Vehicles.Speed := 20.0; -- Set a default speed for the vehicle
+            Put_Line("Vehicle is moving in the parking garage.");
+            delay 5.0; -- Simulate for drive to destination
+            -- random messgage that car is now parked
 
-            Radar_Systems.Radar_Scan_Garage_Simulation;
-            -- Simulate door toggle
-            --Luxury_Vehicle.Update_Door_Status(Vehicles);
-            --Enable_Object_Detection(Vehicles); 
+            Put_Line("Vehicle has reached destination.");
             Turn_Off_Engine(Vehicles);
    
          when 2 =>

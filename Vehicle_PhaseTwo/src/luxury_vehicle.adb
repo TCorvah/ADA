@@ -128,7 +128,16 @@ end Attempt_Move;
    procedure Enable_Object_Detection(Lux_Car : in out Luxury_Car) is
    begin
       --Radar_Systems.Detect_Object(Radars, Object_Threshold);
-      Radar_Systems.Radar_Scan_Highway_Simulation;
+      Put_Line("Object detection enabled.");
+      Radar_Systems.Radar_Scan_Garage_Simulation;
+      if Vehicle_Mobile(Lux_Car) then
+         Put_Line("Vehicle is mobile and object detection is enabled.");
+         Lux_Car.Is_Moving := True;
+      else
+         Put_Line("Vehicle is not mobile, but object detection is enabled.");
+         Lux_Car.Is_Moving := False;
+      end if;
+
    end Enable_Object_Detection;
 
    -- Procedure to reduce speed based on object detection
