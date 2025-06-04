@@ -65,7 +65,7 @@ package body System_Interface is
       my_sensor : Sensor_System.Sensor;
    
       -- Random distance for object detection
- 
+      Random_Speed : Float;
       Random_Distance : Float;
  
    begin
@@ -146,7 +146,10 @@ package body System_Interface is
             Activate_Radar(Vehicles.Car_Radar);
             declare
                Gen : Ada.Numerics.Float_Random.Generator;
-               Random_Distance : Float;
+               speed_min : Float := 5.0; -- Speed of the vehicle
+               speed_max : Float := 60.0; -- Speed of the vehicle
+
+
             begin
                -- Initialize the random number generator
                Ada.Numerics.Float_Random.Reset(Gen);
@@ -154,6 +157,13 @@ package body System_Interface is
                Random_Distance := Ada.Numerics.Float_Random.Random(Gen) * 99.5 + 0.5;
                Put_Line("Random Distance: " & Float'Image(Random_Distance));
                Vehicles.Car_Radar.Object_Distance := Random_Distance;
+               Ada.Numerics.Float_Random.Reset(Gen); -- Reset the generator for speed
+               Random_Speed := Ada.Numerics.Float_Random.Random(Gen) * (speed_max - speed_min) + speed_min;
+               Put("Initial Speed: ");
+               Float_IO.Put(Random_Speed, Fore => 1, Aft => 2, Exp => 0);
+               New_Line;
+
+               Vehicles.Speed := Random_Speed; -- Set a random speed for the vehicle
             end;
             --Ada.Numerics.Float_Random.Reset(Gen); 
 
@@ -162,15 +172,19 @@ package body System_Interface is
             --Vehicles.Car_Radar.Object_Distance := Random_Distance;
             
             Enable_Object_Detection(Vehicles);
-            Vehicles.Is_Moving := True; -- Set the vehicle to moving state
-            Vehicles.Speed := 20.0; -- Set a default speed for the vehicle
-            Put_Line("Vehicle is moving in the parking garage.");
-            delay 5.0; -- Simulate for drive to destination
+            -- Vehicles.Car_Radar.Object_Distance := Random_Distance; -- Set the random distance for object detection
             -- random messgage that car is now parked
-
+            Vehicles.Speed := Random_Speed; -- Set a random speed for the vehicle
+            Vehicles.Is_Moving := True; -- Set the vehicle to moving state
+            Put ("Vehicle is moving at speed: ");
+            Float_IO.Put(Random_Speed, Fore => 1, Aft => 2, Exp => 0);
+            Put ("m/s");
+            New_Line;
+            
+            delay 5.0; -- Simulate for drive to destination
             Put_Line("Vehicle has reached destination.");
             Turn_Off_Engine(Vehicles);
-   
+
          when 2 =>
             --Vehicles.Car_Radar.Object_Distance := 110.0; -- 110 meters
             Put_Line("Scenario: Quiet Country Road");

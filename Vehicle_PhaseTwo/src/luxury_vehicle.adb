@@ -131,7 +131,7 @@ end Attempt_Move;
       Put_Line("Object detection enabled.");
       Radar_Systems.Radar_Scan_Garage_Simulation;
       if Vehicle_Mobile(Lux_Car) then
-         Put_Line("Vehicle is mobile and object detection is enabled.");
+         Put_Line("Vehicle is mobile and driving to destination.");
          Lux_Car.Is_Moving := True;
       else
          Put_Line("Vehicle is not mobile, but object detection is enabled.");
