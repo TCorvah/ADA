@@ -63,6 +63,7 @@ package body System_Interface is
       SeatBelt : Integer;
       my_radar : Radar_Systems.Radar;
       my_sensor : Sensor_System.Sensor;
+      Radar_Data : Radar_Systems.Radar_Data;
    
       -- Random distance for object detection
       Random_Speed : Float;
@@ -151,6 +152,7 @@ package body System_Interface is
 
 
             begin
+              -- Get radar data:
                -- Initialize the random number generator
                Ada.Numerics.Float_Random.Reset(Gen);
                -- Generate a random distance between 0.5 and 100 meters
@@ -162,8 +164,9 @@ package body System_Interface is
                Put("Initial Speed: ");
                Float_IO.Put(Random_Speed, Fore => 1, Aft => 2, Exp => 0);
                New_Line;
-
+               Vehicles.Car_Radar.Object_Distance := Random_Distance;
                Vehicles.Speed := Random_Speed; -- Set a random speed for the vehicle
+               Radar_Data := Radar_Systems.Analyze_Radar_Data(Vehicles.Car_Radar.Object_Distance); 
             end;
             --Ada.Numerics.Float_Random.Reset(Gen); 
 
@@ -175,12 +178,38 @@ package body System_Interface is
             -- Vehicles.Car_Radar.Object_Distance := Random_Distance; -- Set the random distance for object detection
             -- random messgage that car is now parked
             Vehicles.Speed := Random_Speed; -- Set a random speed for the vehicle
+            Put_Line("Radar Decision: " & Radar_Systems.Radar_Data'Image(Radar_Data));
+
+            case Radar_Data is
+               when Emergency_Stop =>
+                  Put_Line("Emergency Stop: Object detected too close. Vehicle will not move.");
+                  Vehicles.Speed := 0.0; -- Stop the vehicle
+                  Vehicles.Is_Moving := False;
+               when Slow_Down =>
+                  Put_Line("Slow Down: Object detected within threshold. Reducing speed.");
+                  Vehicles.Speed := Vehicles.Speed * 0.5; -- Reduce speed by half
+               when Caution =>
+                  Put_Line("Caution: Object detected at a safe distance. Proceed with caution.");
+                  Vehicles.Speed := Vehicles.Speed * 0.75; -- Reduce speed by 25%
+                  Put_Line (" Caution: Object detected at a safe distance. Proceed with caution.");
+                  Vehicles.Is_Moving := True; -- Vehicle can proceed
+               when Clear_To_Move =>
+                  Put_Line("Clear to Move: No obstacles detected. Vehicle can proceed.");
+                  Vehicles.Speed := Random_Speed; -- Maintain current speed
+                  Vehicles.Is_Moving := True; -- Vehicle can proceed
+                   Put ("Vehicle is moving at speed: ");
+        
+               when others =>
+                  Put_Line("Unknown radar data. Vehicle will not move.");
+                  Vehicles.Speed := 0.0; -- Stop the vehicle
+                  Vehicles.Is_Moving := False;
+            end case;
+ 
             Vehicles.Is_Moving := True; -- Set the vehicle to moving state
-            Put ("Vehicle is moving at speed: ");
+           
             Float_IO.Put(Random_Speed, Fore => 1, Aft => 2, Exp => 0);
             Put ("m/s");
             New_Line;
-            
             delay 5.0; -- Simulate for drive to destination
             Put_Line("Vehicle has reached destination.");
             Turn_Off_Engine(Vehicles);

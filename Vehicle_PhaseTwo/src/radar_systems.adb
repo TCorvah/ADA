@@ -1,7 +1,7 @@
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Float_Text_IO; use Ada.Float_Text_IO;
 with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
-with Radar_Systems;
+with Radar_Systems; use Radar_Systems;
 with Ada.Numerics.Float_Random; use Ada.Numerics.Float_Random;
 with Vehicle_Constants; use Vehicle_Constants;
 
@@ -76,12 +76,26 @@ package body Radar_Systems is
       end case;
    end Sector_Center_Angle;
 
+   function Analyze_Radar_Data(Distance: Float) return Radar_Data is
+   begin
+      if Distance <= Vehicle_Constants.Minimum_Constant_Distance then
+         return Emergency_Stop; -- Emergency stop if object is too close
+      elsif Distance <= Vehicle_Constants.Min_Caution_Distance then
+         return Slow_Down; -- Slow down if object is detected within caution distance
+      elsif Distance > Vehicle_Constants.Min_Caution_Distance and Distance <= Vehicle_Constants.MAX_Speed then
+         return Caution; -- Caution if object is detected within caution distance
+      else
+         return Clear_To_Move; -- Clear to move if no objects are detected
+      end if;
+   end Analyze_Radar_Data;
+
 
    procedure Radar_Scan_Highway_Simulation is
       Scan_Count : Float := 0.0;
       Max_Scans : constant Float := 5.0;
       Gen : Generator;
-      Distance : Float;
+      Object_Distance : Float;
+
       Angle : Float;
        --simulate the radar scan for random distance and angle
       function Random_Angle return Float is
@@ -100,18 +114,18 @@ package body Radar_Systems is
       loop
          exit when Scan_Count = Max_Scans;
          Angle := Random_Angle; -- Scan across Line of Sight
-         Distance := Random_Distance;
+         Object_Distance := Random_Distance;
          Put("Angle: ");
          Put(Angle);
          Put("Degree,  Distance to object: ");
-         Put(Distance);
+         Put(Object_Distance);
          Put_Line ("meters");
-         if Distance <=  Vehicle_Constants.Minimum_Constant_Distance then
+         if Object_Distance <=  Vehicle_Constants.Minimum_Constant_Distance then
             Put_Line ("Radar: Emergency brake! Object too close");
-         elsif Distance <= Vehicle_Constants.Min_Caution_Distance then
-            Put_Line ("Radar: Slow down! Object detected at distance: " & Float'Image(Distance) & " meters, angle: " & Float'Image(Angle));
-         elsif Distance > Vehicle_Constants.Min_Caution_Distance and Distance <= Vehicle_Constants.MAX_Speed then
-            Put_Line ("Radar: Caution! Object detected at distance: " & Float'Image(Distance) & " meters, angle: " & Float'Image(Angle));
+         elsif Object_Distance <= Vehicle_Constants.Min_Caution_Distance then
+            Put_Line ("Radar: Slow down! Object detected at distance: " & Float'Image(Object_Distance) & " meters, angle: " & Float'Image(Angle));
+         elsif Object_Distance > Vehicle_Constants.Min_Caution_Distance and Object_Distance <= Vehicle_Constants.MAX_Speed then
+            Put_Line ("Radar: Caution! Object detected at distance: " & Float'Image (Object_Distance) & " meters, angle: " & Float'Image(Angle));
          else
             Put_Line ("Radar: >> Path Clear: ");
          end if;
@@ -171,11 +185,11 @@ package body Radar_Systems is
                Put_Line ("Right Sector Scan for objects: ");
          end case;
          --Distance checks
-         if Distance <=  10.0 then
+         if Distance <= Vehicle_Constants.Minimum_Constant_Distance then
             Put_Line ("Radar: Emergency brake! Object too close");
-         elsif Distance <= 30.0 then
+         elsif Distance <= Vehicle_Constants.Min_Caution_Distance then
             Put_Line ("Radar: Slow down! Object detected at distance: " & Float'Image(Distance) & " meters, angle: " & Float'Image(Angle));
-         elsif Distance > 30.0 and Distance <= 45.0 then
+         elsif Distance > Vehicle_Constants.Min_Caution_Distance and Distance <= Vehicle_Constants.MAX_Speed then
             Put_Line ("Radar: Caution! Object detected at distance: " & Float'Image(Distance) & " meters, angle: " & Float'Image(Angle));
          else
             Put_Line ("Radar: >> Path Clear: ");
