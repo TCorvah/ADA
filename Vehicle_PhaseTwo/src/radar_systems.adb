@@ -3,6 +3,7 @@ with Ada.Float_Text_IO; use Ada.Float_Text_IO;
 with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 with Radar_Systems;
 with Ada.Numerics.Float_Random; use Ada.Numerics.Float_Random;
+with Vehicle_Constants; use Vehicle_Constants;
 
 package body Radar_Systems is
    -- This procedure is used to activate the radar system 
@@ -105,11 +106,11 @@ package body Radar_Systems is
          Put("Degree,  Distance to object: ");
          Put(Distance);
          Put_Line ("meters");
-         if Distance <=  10.0 then
+         if Distance <=  Vehicle_Constants.Minimum_Constant_Distance then
             Put_Line ("Radar: Emergency brake! Object too close");
-         elsif Distance <= 30.0 then
+         elsif Distance <= Vehicle_Constants.Min_Caution_Distance then
             Put_Line ("Radar: Slow down! Object detected at distance: " & Float'Image(Distance) & " meters, angle: " & Float'Image(Angle));
-         elsif Distance > 30.0 and Distance <= 45.0 then
+         elsif Distance > Vehicle_Constants.Minimum_Constant_Distance and Distance <= Vehicle_Constants.MAX_Speed then
             Put_Line ("Radar: Caution! Object detected at distance: " & Float'Image(Distance) & " meters, angle: " & Float'Image(Angle));
          else
             Put_Line ("Radar: >> Path Clear: ");
