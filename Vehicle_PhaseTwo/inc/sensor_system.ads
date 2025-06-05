@@ -1,3 +1,4 @@
+with Vehicle_Constants;
 with Vehicle_System;
 use Vehicle_System;
 package Sensor_System is
@@ -23,7 +24,7 @@ package Sensor_System is
    type Sensor is tagged record
       Status : Sensor_Status := Off;
       Door_Open : Boolean := False;
-      Detected_Weight : Float := 0.0;
+      Detected_Weight : Float := 20.0;   -- Weight of the detected object
       Seatbelt_On : Boolean := False;
       Visibility : Time_of_Day := Night; -- from 0.0 (dark) to 1.0 (bright)
       Headlights_On : Boolean := False;

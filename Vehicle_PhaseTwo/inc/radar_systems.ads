@@ -67,7 +67,7 @@ package Radar_Systems is
    -- The procedure is used to control the radar system's functionality and behavior.
    -- The procedure is designed to be modular and reusable, allowing for easy integration with other vehicle systems.
    -- The procedure is written in Ada and follows best practices for software development.
-   procedure Radar_Scan_Simulation;
+   procedure Radar_Scan_Highway_Simulation;
    procedure Radar_Scan_Garage_Simulation;
 
 end Radar_Systems;
