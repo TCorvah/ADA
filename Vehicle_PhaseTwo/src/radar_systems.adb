@@ -110,7 +110,7 @@ package body Radar_Systems is
             Put_Line ("Radar: Emergency brake! Object too close");
          elsif Distance <= Vehicle_Constants.Min_Caution_Distance then
             Put_Line ("Radar: Slow down! Object detected at distance: " & Float'Image(Distance) & " meters, angle: " & Float'Image(Angle));
-         elsif Distance > Vehicle_Constants.Minimum_Constant_Distance and Distance <= Vehicle_Constants.MAX_Speed then
+         elsif Distance > Vehicle_Constants.Min_Caution_Distance and Distance <= Vehicle_Constants.MAX_Speed then
             Put_Line ("Radar: Caution! Object detected at distance: " & Float'Image(Distance) & " meters, angle: " & Float'Image(Angle));
          else
             Put_Line ("Radar: >> Path Clear: ");
