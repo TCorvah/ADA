@@ -24,6 +24,7 @@ package Radar_Systems is
    -- The radar status is a critical component of the vehicle's safety and performance.
  type Radar_Status is (Off, On);
  type Radar_Sector is (Front, Rear, Left, Right);
+ type Radar_Data is (Emergency_Stop, Slow_Down, Caution, Clear_To_Move);
    -- Define the radar record type
    -- This record holds the details of the radar system, including its status, object detection status, distance to the object, and motion status.
    -- The record is used to store the radar system's state and pass it between procedures.
@@ -57,6 +58,7 @@ package Radar_Systems is
    function Sector_Center_Angle(Sector : Radar_Sector) return Float;
    function Normalize_Angle(Angle : Float) return Float;
    function Get_Sector_Angle(Sector : Float) return Radar_Sector;
+   function Analyze_Radar_Data(Distance: Float) return Radar_Data;
       -- This function normalizes the angle to be within the range of -180 to 180 degrees.
       -- The function is used to ensure that angles are consistent and can be compared easily.
       -- The function is designed to be modular and reusable, allowing for easy integration with other vehicle systems.

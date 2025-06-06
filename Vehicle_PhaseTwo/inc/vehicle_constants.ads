@@ -12,4 +12,6 @@ package Vehicle_Constants is
    Minimum_Constant_Distance : constant Float := 10.0; -- Minimum speed for vehicle to be considered mobile
    MAX_Speed : constant Float := 45.0; -- Minimum speed for vehicle to be considered mobile
    Min_Caution_Distance : constant Float := 30.0; -- Minimum caution distance for vehicle to be considered mobile
+   half_Constant_Float : constant Float := 0.5; -- Half of a constant float value
+   Full_Circle_Angle : constant Float := 360.0; -- Full circle angle in degrees
 end Vehicle_Constants;

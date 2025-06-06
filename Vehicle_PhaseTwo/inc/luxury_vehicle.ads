@@ -18,6 +18,8 @@ package Luxury_Vehicle is
       luxury_cost : Float := 100.0;
       miles_gallon : Float := 40.0;
       Lux_Model : Vehicle_Types.Vehicle_Type := Vehicle_Types.Luxury_cars;
+      Min_Speed : Float := 5.0; -- Speed of the luxury car
+      Max_Speed : Float := 60.0; -- Maximum speed of the luxury car
    end record;
 
 
