@@ -164,7 +164,7 @@ package body System_Interface is
                Put("Initial Speed: ");
                Float_IO.Put(Random_Speed, Fore => 1, Aft => 2, Exp => 0);
                New_Line;
-               Vehicles.Car_Radar.Object_Distance := Random_Distance;
+  
                Vehicles.Speed := Random_Speed; -- Set a random speed for the vehicle
                Radar_Data := Radar_Systems.Analyze_Radar_Data(Vehicles.Car_Radar.Object_Distance); 
             end;
@@ -177,7 +177,6 @@ package body System_Interface is
             Enable_Object_Detection(Vehicles);
             -- Vehicles.Car_Radar.Object_Distance := Random_Distance; -- Set the random distance for object detection
             -- random messgage that car is now parked
-            Vehicles.Speed := Random_Speed; -- Set a random speed for the vehicle
             Put_Line("Radar Decision: " & Radar_Systems.Radar_Data'Image(Radar_Data));
 
             case Radar_Data is
@@ -197,22 +196,24 @@ package body System_Interface is
                   Put_Line("Clear to Move: No obstacles detected. Vehicle can proceed.");
                   Vehicles.Speed := Random_Speed; -- Maintain current speed
                   Vehicles.Is_Moving := True; -- Vehicle can proceed
-                   Put ("Vehicle is moving at speed: ");
-        
+                   Put ("Vehicle is moving at speed: "); 
                when others =>
                   Put_Line("Unknown radar data. Vehicle will not move.");
                   Vehicles.Speed := 0.0; -- Stop the vehicle
                   Vehicles.Is_Moving := False;
             end case;
- 
-            Vehicles.Is_Moving := True; -- Set the vehicle to moving state
+            if Vehicles.Is_Moving then
+               Timing_Controller.Garage_Movement_Controller_task.Start_Garage_Movement_Timer(Vehicles.Min_Speed, Vehicles.Max_Speed); -- Start the parking garage timer
+               delay 2.0; -- Simulate time delay for parking garage scenario
+               Put_Line("Vehicle navigating movement in garage.");
+               --shutdown and clean up
+               Timing_Controller.Garage_Movement_Controller_task.Shutdown;
+               Turn_Off_Engine(Vehicles);
+            else
+               Put_Line("Vehicle is not moving.");
+            end if;
+        
            
-            Float_IO.Put(Random_Speed, Fore => 1, Aft => 2, Exp => 0);
-            Put ("m/s");
-            New_Line;
-            delay 5.0; -- Simulate for drive to destination
-            Put_Line("Vehicle has reached destination.");
-            Turn_Off_Engine(Vehicles);
 
          when 2 =>
             --Vehicles.Car_Radar.Object_Distance := 110.0; -- 110 meters

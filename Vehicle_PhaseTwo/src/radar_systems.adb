@@ -37,10 +37,10 @@ package body Radar_Systems is
       Norm : Float := Angle;
    begin
       while Norm < 0.0 loop
-         Norm := Norm + 360.0;
+         Norm := Norm + Vehicle_Constants.Full_Circle_Angle;
       end loop;
-      while Norm >= 360.0 loop
-         Norm := Norm - 360.0;
+      while Norm >= Vehicle_Constants.Full_Circle_Angle loop
+         Norm := Norm - Vehicle_Constants.Full_Circle_Angle;
       end loop;
       return Norm;
    end Normalize_Angle;
