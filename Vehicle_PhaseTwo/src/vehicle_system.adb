@@ -1,5 +1,6 @@
 -- vehicle.adb
 with Ada.Text_IO; use Ada.Text_IO;
+with Road_ProfileConfig; use Road_ProfileConfig;
 
 package body Vehicle_System is
 
@@ -25,6 +26,7 @@ package body Vehicle_System is
    begin
       V.Engine_On := False;
       V.Speed := 0.0;
+      V.Is_Moving := False;
       Put_Line("Engine is turning off");
    end Stop_Engine;
    
@@ -41,13 +43,20 @@ package body Vehicle_System is
    -- If the vehicle is not in motion, it prints a message indicating that the vehicle is not in motion.
    procedure Set_Speed(V : in out Vehicle; New_Speed : Float) is
    begin
-      if V.Is_Moving then
-         V.Speed := New_Speed;
-         Put_Line("Speed set to: " & Float'Image(New_Speed));
+      if New_Speed < V.Current_Road.Min_Speed or else New_Speed > V.Current_Road.Max_Speed then
+         raise Constraint_Error with "Speed is out of bounds for this road type";
       else
-         Put_Line("Vehicle is not in motion.");
-      end if;
+         V.Speed := New_Speed;   
+         V.Is_Moving := True;
+         Put_Line("Speed set to: " & Float'Image(New_Speed));
+      end if;   
    end Set_Speed;
+
+   procedure Set_Road_Profile(V : in out Vehicle; Profile : Road_Profile) is
+   begin
+      V.Current_Road := Profile;
+      Put_Line("Road profile set to: " & Road_Type'Image(Profile.Name));
+   end Set_Road_Profile;
 
 
 
@@ -60,6 +69,16 @@ package body Vehicle_System is
    begin
       V.Is_Reserved := True;
    end Set_Reservation;
+
+   function Get_Speed(V : Vehicle) return Float is
+   begin
+      return V.Speed;
+   end Get_Speed;
+
+   function Get_Engine_Status(V : Vehicle) return Boolean is
+   begin
+      return V.Engine_On;
+   end Get_Engine_Status;
 
 
    

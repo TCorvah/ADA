@@ -199,11 +199,11 @@ package body System_Interface is
                    Put ("Vehicle is moving at speed: "); 
                when others =>
                   Put_Line("Unknown radar data. Vehicle will not move.");
-                  Vehicles.Speed := 0.0; -- Stop the vehicle
+                  Vehicles.Min_Speed := 0.0; -- Stop the vehicle
                   Vehicles.Is_Moving := False;
             end case;
             if Vehicles.Is_Moving then
-               Timing_Controller.Garage_Movement_Controller_task.Start_Garage_Movement_Timer(Vehicles.Min_Speed, Vehicles.Max_Speed); -- Start the parking garage timer
+               Timing_Controller.Garage_Movement_Controller_task.Start_Garage_Movement_Timer(Vehicles.Max_Speed, Vehicles.Min_Speed); -- Start the parking garage timer
                delay 2.0; -- Simulate time delay for parking garage scenario
                Put_Line("Vehicle navigating movement in garage.");
                --shutdown and clean up
