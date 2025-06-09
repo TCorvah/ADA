@@ -1,3 +1,4 @@
+with Vehicle_Constants; use Vehicle_Constants;
 with Radar_Systems, Sensor_System, Vehicle_System, Vehicle_Types;
 
 -- This package defines the Luxury Vehicle type and its associated procedures.
@@ -11,19 +12,16 @@ with Radar_Systems, Sensor_System, Vehicle_System, Vehicle_Types;
 -- The package is designed to be used in conjunction with the Vehicle_System and Vehicle_Types packages.
 package Luxury_Vehicle is
 
-   -- Luxury Vehicle Type (Extends the base class)
+
    type Luxury_Car is new Vehicle_System.Vehicle with record
       Car_Sensor : Sensor_System.Sensor;
       Car_Radar : Radar_Systems.Radar;
-      luxury_cost : Float := 100.0;
-      miles_gallon : Float := 40.0;
+      luxury_cost : Float := Vehicle_Constants.Luxury_Rental_Cost;
+      miles_gallon : Float := Vehicle_Constants.Luxury_MPG;
       Lux_Model : Vehicle_Types.Vehicle_Type := Vehicle_Types.Luxury_cars;
-      Min_Speed : Float := 5.0; -- Speed of the luxury car
-      Max_Speed : Float := 60.0; -- Maximum speed of the luxury car
+      Min_Speed : Float := Vehicle_Constants.Vehicle_Min_Speed; -- Speed of the luxury car
+      Max_Speed : Float := Vehicle_Constants.Vehicle_Max_Speed; -- Maximum speed of the luxury car
    end record;
-
-
-   use Luxury_Vehicle;
    ------------------------------------------------------------
    -- Procedure : Update_Door_Status
    -- Purpose  : Gives a status if doors are open or close 
@@ -39,7 +37,7 @@ package Luxury_Vehicle is
    -- Input : Uses internal state of threshold detection
    -- Output : alert driver of object in view of certain range
    ------------------------------------------------------------
-   procedure Enable_Object_Detection(Lux_Car : in out Luxury_Car);
+   procedure Enable_Object_Detection(V : in out Luxury_Car);
 
    
 
@@ -49,14 +47,14 @@ package Luxury_Vehicle is
    -- Purpose  : checks if the door is closed
    -- Input : Uses internal state of sensor
    -- Output : status of doors
-   function is_Door_Closed(Lux_Car : in out Luxury_Car) return Boolean;
+   overriding function is_Door_Closed(V : in out Luxury_Car) return Boolean;
 
    --------------------------------------------------------------
    -- procedure : Attempt_Move
    -- Purpose  : checks if the car is in motion
    -- Input : Uses internal state of sensor
    -- Output : 
-   overriding procedure Attempt_Move(Lux_Car : in out Luxury_Car; Threshold : in Float);
+   overriding procedure Attempt_Move(V : in out Luxury_Car; Threshold : in Float);
 
 
    --------------------------------------------------------------
@@ -64,7 +62,7 @@ package Luxury_Vehicle is
    -- Purpose  : checks if the car is in motion
    -- Input : Uses internal state of sensor
    -- Output : status of doors
-   overriding function Vehicle_Mobile(Lux_Car : in out Luxury_Car) return Boolean;
+   overriding function Vehicle_Mobile(V : in out Luxury_Car) return Boolean;
 
 
    --------------------------------------------------------------
@@ -72,7 +70,10 @@ package Luxury_Vehicle is
    -- Purpose  : checks if the car is in motion
    -- Input : Uses internal state of sensor
    -- Output : status of door
-   procedure Turn_Off_Engine(Lux_Car : in out Luxury_Car);
+   procedure Turn_Off_Engine(V : in out Luxury_Car);
 
+   
+
+   
 
 end Luxury_Vehicle;
