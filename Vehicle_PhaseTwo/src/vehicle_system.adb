@@ -29,14 +29,12 @@ package body Vehicle_System is
       V.Is_Moving := False;
       Put_Line("Engine is turning off");
    end Stop_Engine;
-   
-   -- This procedure checks the vehicle status and prints a message indicating whether the vehicle is in motion or not.
-   procedure Vehicle_NotMobile(V : in out Vehicle) is
+
+
+   function Get_Engine_Status(V : Vehicle) return Boolean is
    begin
-      V.Is_Moving := False;
-      V.Speed := 0.0;
-      Put_Line("Vehicle stopped.");
-   end Vehicle_NotMobile;
+      return V.Engine_On;
+   end Get_Engine_Status;
 
    -- This procedure sets the speed of the vehicle if it is in motion.
    -- It takes a Vehicle object and a new speed as input parameters.
@@ -52,33 +50,48 @@ package body Vehicle_System is
       end if;   
    end Set_Speed;
 
+
+    function Get_Speed(V : Vehicle) return Float is
+   begin
+      return V.Speed;
+   end Get_Speed;
+
+
    procedure Set_Road_Profile(V : in out Vehicle; Profile : Road_Profile) is
    begin
       V.Current_Road := Profile;
       Put_Line("Road profile set to: " & Road_Type'Image(Profile.Name));
    end Set_Road_Profile;
+   
+   -- This procedure checks the vehicle status and prints a message indicating whether the vehicle is in motion or not.
+   procedure Vehicle_NotMobile(V : in out Vehicle) is
+   begin
+      V.Is_Moving := False;
+      V.Speed := 0.0;
+      Put_Line("Vehicle stopped.");
+   end Vehicle_NotMobile;
 
-
+      procedure Set_Reservation(V : in out Vehicle) is
+   begin
+      V.Is_Reserved := True;
+   end Set_Reservation;
 
    function Reserve_Vehicle(V : Vehicle) return Boolean is
    begin
       return V.Is_Reserved;
    end Reserve_Vehicle;
 
-   procedure Set_Reservation(V : in out Vehicle) is
-   begin
-      V.Is_Reserved := True;
-   end Set_Reservation;
-
-   function Get_Speed(V : Vehicle) return Float is
-   begin
-      return V.Speed;
-   end Get_Speed;
 
    function Get_Engine_Status(V : Vehicle) return Boolean is
    begin
       return V.Engine_On;
    end Get_Engine_Status;
+
+
+
+
+  
+
 
 
    
