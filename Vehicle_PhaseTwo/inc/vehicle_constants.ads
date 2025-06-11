@@ -17,8 +17,5 @@ package Vehicle_Constants is
    Full_Circle_Angle : constant Float := 360.0; -- Full circle angle in degrees
    Vehicle_Max_Speed : constant Float := 60.0; -- Maximum speed for any vehicle
    Vehicle_Min_Speed : constant Float := 5.0; -- Minimum speed for any vehicle
-   Garage_Profile : constant Road_Profile := (Name => Garage, Max_Speed => 20.0, Min_Speed => 0.0, Speed_Limit => 10.0);
-   Country_Road_Profile : constant Road_Profile := (Name => Country_Road, Max_Speed => 40.0, Min_Speed => 20.0, Speed_Limit => 30.0);
-   Busy_City_Profile : constant Road_Profile := (Name => Busy_City, Max_Speed => 50.0, Min_Speed => 30.0, Speed_Limit => 40.0);
-   Highway_Profile : constant Road_Profile := (Name => Highway, Max_Speed => 70.0, Min_Speed => 50.0, Speed_Limit => 60.0);
+
 end Vehicle_Constants;

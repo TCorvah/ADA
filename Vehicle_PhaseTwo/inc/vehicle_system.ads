@@ -13,14 +13,16 @@ package Vehicle_System is
 
    -- Speed controls
    procedure Set_Speed(V : in out Vehicle; New_Speed : Float);
+   function Get_Speed(V : Vehicle) return Float;
    procedure Set_Road_Profile(V : in out Vehicle; Profile : Road_Profile);
 
    -- Movement and door checks (polymorphic)
    function Vehicle_Mobile(V : in out Vehicle) return Boolean is abstract;
-   function is_Door_Closed(V : in out Vehicle) return Boolean is abstract;
 
    -- Speed validity enforcement
    procedure Vehicle_NotMobile(V : in out Vehicle);
+   function is_Door_Closed(V : in out Vehicle) return Boolean is abstract;
+
 
    -- Reservation controls
    function Reserve_Vehicle(V : Vehicle) return Boolean;
@@ -33,7 +35,7 @@ package Vehicle_System is
    function Get_Engine_Status(V : Vehicle) return Boolean;
    function Get_Is_Moving(V : Vehicle) return Boolean;
    function Get_Door_Status(V : Vehicle) return Door_Status_Type;
-   function Get_Speed(V : Vehicle) return Float;
+
 
 
    -- === Setters ===

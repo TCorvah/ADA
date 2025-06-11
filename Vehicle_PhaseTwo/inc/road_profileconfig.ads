@@ -1,4 +1,4 @@
-package Road_ProfileConfig is
+package  Road_ProfileConfig is
 
    type  Road_Type is (Garage, Country_Road, Busy_City, Highway);
 
@@ -12,5 +12,41 @@ package Road_ProfileConfig is
    end record;
 
 
+   
+
+   -- You can define some constant profiles here:
+   Garage_Profile : constant Road_Profile := (
+      Name        => Garage,
+      Max_Speed   => 20.0,
+      Min_Speed   => 5.0,
+      Speed_Limit => 10.0
+   );
+
+   City_Profile : constant Road_Profile := (
+      Name        => Busy_City,
+      Max_Speed   => 40.0,
+      Min_Speed   => 10.0,
+      Speed_Limit => 35.0
+   );
+
+   Country_Profile : constant Road_Profile := (
+      Name        => Country_Road,
+      Max_Speed   => 60.0,
+      Min_Speed   => 20.0,
+      Speed_Limit => 50.0
+   );
+
+   Highway_Profile : constant Road_Profile := (
+      Name        => Highway,
+      Max_Speed   => 120.0,
+      Min_Speed   => 45.0,
+      Speed_Limit => 100.0
+   );
+
+
 
 end Road_ProfileConfig;
+
+
+
+
