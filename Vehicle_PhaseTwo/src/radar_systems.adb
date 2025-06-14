@@ -3,9 +3,12 @@ with Ada.Float_Text_IO; use Ada.Float_Text_IO;
 with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 with Radar_Systems; use Radar_Systems;
 with Ada.Numerics.Float_Random; use Ada.Numerics.Float_Random;
+with Road_ProfileConfig; use Road_ProfileConfig;
 with Vehicle_Constants; use Vehicle_Constants;
 
+
 package body Radar_Systems is
+   package Float_IO is new Ada.Text_IO.Float_IO(Float);
    -- This procedure is used to activate the radar system 
    -- and set its status to "On".
    -- It also prints a message indicating that the radar has been activated.
@@ -46,20 +49,21 @@ package body Radar_Systems is
    end Normalize_Angle;
 
    function Get_Sector_Angle(Sector : Float) return Radar_Sector is
-      A: Float := Normalize_Angle(Sector);
+      A : Float := Normalize_Angle(Sector);
    begin
-      if A >= 337.5 or A < 22.5 then
-         return Radar_Systems.Front; -- Front sector
-      elsif A >= 22.5 and A < 67.5 then
-         return Radar_Systems.Right; -- Right sector
-      elsif A >= 67.5 and A < 112.5 then
-         return Radar_Systems.Rear; -- Rear sector
-      elsif A >= 112.5 and A < 157.5 then
-         return Radar_Systems.Left; -- Left sector
+      if (A >= 315.0 or A < 45.0) then
+         return Radar_Systems.Front;
+      elsif A >= 45.0 and A < 135.0 then
+         return Radar_Systems.Right;
+      elsif A >= 135.0 and A < 225.0 then
+         return Radar_Systems.Rear;
+      elsif A >= 225.0 and A < 315.0 then
+         return Radar_Systems.Left;
       else
-         return Radar_Systems.Front; -- Default to Front sector if angle is not recognized
+         return Radar_Systems.Front; -- Should never reach here if normalization works
       end if;
    end Get_Sector_Angle;
+
      
 
    function Sector_Center_Angle(Sector : Radar_Sector) return Float is
@@ -76,13 +80,13 @@ package body Radar_Systems is
       end case;
    end Sector_Center_Angle;
 
-   function Analyze_Radar_Data(Distance: Float) return Radar_Data is
+   function Analyze_Radar_Data(Distance: Float; Road_Profile : Road_ProfileConfig.Road_Profile) return Radar_Data is
    begin
-      if Distance <= Vehicle_Constants.Minimum_Constant_Distance then
+      if Distance <= Road_Profile.Min_Detection_Range then
          return Emergency_Stop; -- Emergency stop if object is too close
-      elsif Distance <= Vehicle_Constants.Min_Caution_Distance then
+      elsif Distance <= Road_Profile.Caution_Distance then
          return Slow_Down; -- Slow down if object is detected within caution distance
-      elsif Distance > Vehicle_Constants.Min_Caution_Distance and Distance <= Vehicle_Constants.MAX_Speed then
+      elsif Distance <= Road_Profile.Max_Detection_Range then
          return Caution; -- Caution if object is detected within caution distance
       else
          return Clear_To_Move; -- Clear to move if no objects are detected
@@ -120,11 +124,11 @@ package body Radar_Systems is
          Put("Degree,  Distance to object: ");
          Put(Object_Distance);
          Put_Line ("meters");
-         if Object_Distance <=  Vehicle_Constants.Minimum_Constant_Distance then
+         if Object_Distance <=  Vehicle_Constants.Minimum_Detection_Range then
             Put_Line ("Radar: Emergency brake! Object too close");
          elsif Object_Distance <= Vehicle_Constants.Min_Caution_Distance then
             Put_Line ("Radar: Slow down! Object detected at distance: " & Float'Image(Object_Distance) & " meters, angle: " & Float'Image(Angle));
-         elsif Object_Distance > Vehicle_Constants.Min_Caution_Distance and Object_Distance <= Vehicle_Constants.MAX_Speed then
+         elsif Object_Distance > Vehicle_Constants.Min_Caution_Distance and Object_Distance <= Vehicle_Constants.Maximum_Detection_Range then
             Put_Line ("Radar: Caution! Object detected at distance: " & Float'Image (Object_Distance) & " meters, angle: " & Float'Image(Angle));
          else
             Put_Line ("Radar: >> Path Clear: ");
@@ -138,13 +142,14 @@ package body Radar_Systems is
       Put_Line ("Radar: Scan completed.");
    end Radar_Scan_Highway_Simulation;
 
-   procedure Radar_Scan_Garage_Simulation is
+   procedure Radar_Scan_Garage_Simulation(Road : Road_ProfileConfig.Road_Profile) is
       Scan_Count : Integer := 0;
       Max_Scans : constant Integer := 5;
       Gen : Generator;
       Distance : Float;
       Angle : Float;
       Sector : Radar_Sector;
+     
        --simulate random angle from -45 to 315 degrees(full scan)
       function Random_Angle return Float is
       begin
@@ -154,7 +159,7 @@ package body Radar_Systems is
       --simulate the radar scan for random distance
       function Random_Distance return Float is
       begin
-         return Random(Gen) * 100.0; -- Random distance between 0 and 100 meters
+         return Random(Gen) * Road.Max_Detection_Range; -- Random distance between 0 and 40 meters
       end Random_Distance;
    begin
       Reset (Gen);
@@ -162,17 +167,23 @@ package body Radar_Systems is
       while Scan_Count < Max_Scans loop
          Angle := Random_Angle; -- Generate a random angle for the scan
          Distance := Random_Distance; -- Generate a random distance for the scan
-         Put_Line ("Radar: Scanning at Angle: " & Float'Image(Angle) & " degrees, Distance: " & Float'Image(Distance) & " meters");
-         -- Determine the sector based on the random angle
-         Sector := Get_Sector_Angle(Angle); -- Get the sector based on the random angle
-         Put(", Sector Center Angle: ");
-         Put(Float'Image(Sector_Center_Angle(Sector)));
-         New_Line;
-       
-         Put_Line ("Scan #" & Integer'Image(Scan_Count + 1) &
-          ": Angle = " & Float'Image(Angle) &
-          ", Distance = " & Float'Image(Distance) &
-          ", Sector = " & Radar_Sector'Image(Sector));
+         Sector := Get_Sector_Angle(Angle); -- Determine the sector based on the angle
+         Put_Line("");
+         Put_Line("Scan #" & Integer'Image(Scan_Count + 1) & ":");
+
+         Put("  Angle    : ");
+         Float_IO.Put(Angle, Fore => 6, Aft => 1, Exp => 0);
+         Put_Line("°");
+
+         Put("  Distance : ");
+         Float_IO.Put(Distance, Fore => 6, Aft => 1, Exp => 0);
+         Put_Line(" m");
+
+         Put("  Sector   : " & Radar_Sector'Image(Sector) & 
+               " (center: ");
+         Float_IO.Put(Sector_Center_Angle(Sector), Fore => 4, Aft => 1, Exp => 0);
+         Put_Line("°)");
+
 
          case Sector is
             when Radar_Systems.Front =>
@@ -185,22 +196,52 @@ package body Radar_Systems is
                Put_Line ("Right Sector Scan for objects: ");
          end case;
          --Distance checks
-         if Distance <= Vehicle_Constants.Minimum_Constant_Distance then
-            Put_Line ("Radar: Emergency brake! Object too close");
-         elsif Distance <= Vehicle_Constants.Min_Caution_Distance then
-            Put_Line ("Radar: Slow down! Object detected at distance: " & Float'Image(Distance) & " meters, angle: " & Float'Image(Angle));
-         elsif Distance > Vehicle_Constants.Min_Caution_Distance and Distance <= Vehicle_Constants.MAX_Speed then
-            Put_Line ("Radar: Caution! Object detected at distance: " & Float'Image(Distance) & " meters, angle: " & Float'Image(Angle));
-         else
-            Put_Line ("Radar: >> Path Clear: ");
-            Put_Line ("No objects detected in the " & Radar_Sector'Image(Sector) & " sector.");
-            Put_Line ("Vehicle can move freely");
-         end if;
+         declare
+            Status : Radar_Data := Analyze_Radar_Data(Distance, Road);
+         begin
+            case Status is
+               when Emergency_Stop =>
+                  Put("Radar: Emergency brake! Object detected too close: ");
+                  Float_IO.Put(Distance, Fore => 6, Aft => 1, Exp => 0);
+                  Put(" m, angle: ");
+                  Float_IO.Put(Angle, Fore => 6, Aft => 1, Exp => 0);
+                  Put_Line("°");
+
+               when Slow_Down =>
+                  Put("Radar: Slow down! Object detected at distance: ");
+                  Float_IO.Put(Distance, Fore => 6, Aft => 1, Exp => 0);
+                  Put(" m, angle: ");
+                  Float_IO.Put(Angle, Fore => 6, Aft => 1, Exp => 0);
+                  Put_Line("°");
+
+               when Caution =>
+                  Put("Radar: Caution! Object detected at distance: ");
+                  Float_IO.Put(Distance, Fore => 6, Aft => 1, Exp => 0);
+                  Put(" m, angle: ");
+                  Float_IO.Put(Angle, Fore => 6, Aft => 1, Exp => 0);
+                  Put_Line("°");
+
+               when Clear_To_Move =>
+                  Put_Line("Radar: >> Path Clear: ");
+                  Put_Line("No objects detected in the " & Radar_Sector'Image(Sector) & " sector.");
+                  Put_Line("Vehicle can move freely");
+            end case;
+            if Status /= Clear_To_Move then
+               Float_IO.Put(Distance, Fore => 6, Aft => 1, Exp => 0);
+               Put(" m, angle: ");
+               Float_IO.Put(Angle, Fore => 6, Aft => 1, Exp => 0);
+               Put_Line("°");
+               --Put_Line("Radar: >> Path Blocked: ");
+               --Put_Line("Object detected in the " & Radar_Sector'Image(Sector) & " sector.");
+            end if;
+         end;
+            
          delay 2.5; -- Simulate time delay for radar scan
-         Scan_Count := Scan_Count + 1; -- Increment the scan count
+         Scan_Count := Scan_Count + 1; 
          if Scan_Count = Max_Scans then
             Put_Line ("Radar: Garage scan completed.");
          end if;
+      
       end loop;
    end Radar_Scan_Garage_Simulation;
       
