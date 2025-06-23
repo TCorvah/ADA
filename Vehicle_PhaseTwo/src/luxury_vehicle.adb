@@ -2,7 +2,8 @@ with Ada.Text_IO; use Ada.Text_IO;
 with Luxury_Vehicle, Radar_Systems, Sensor_System, Vehicle_System;
 use Vehicle_System;  use Radar_Systems;  use Sensor_System;
 with Vehicle_Types;use Vehicle_Types;
-with Radar_Systems;
+with Road_ProfileConfig; use Road_ProfileConfig;
+with Radar_Systems; use Radar_Systems;
 with Vehicle_Types;
 package body  Luxury_Vehicle is
 
@@ -13,7 +14,7 @@ package body  Luxury_Vehicle is
    -- The function uses the Vehicle_System package to access the door status
    function is_Door_Closed(V : in out  Luxury_Car) return Boolean is
    begin
-      return V.Current_Door_Status = Door_Closed;         
+      return not Sensor_System.Is_Door_Open(V.Car_Sensor);     
    end is_Door_Closed;
 
    -- Function to check if the vehicle is mobile
@@ -21,10 +22,11 @@ package body  Luxury_Vehicle is
    -- the door is closed, and the seatbelt is fastened
    -- The function returns true if the vehicle is mobile, false otherwise
    -- The function checks the engine status, speed, door status, and seatbelt status
-   function Vehicle_Mobile(V : in out Luxury_Car) return Boolean is
+   function Vehicle_Mobile(V : in out Luxury_Car; Path_Clear : Boolean) return Boolean is
    begin
-      return V.Engine_On and V.Speed > 0.0 and V.Current_Door_Status = Door_Closed
-             and V.Car_Sensor.Seatbelt_On;
+      Sensor_System.Check_Seat(V.Car_Sensor);
+      return Get_Engine_Status(V) and (Get_Speed(V) > 0.0) and is_Door_Closed(V)
+         and Sensor_System.Seat_Occupied(V.Car_Sensor) and Path_Clear;           
    end Vehicle_Mobile;
    
 
@@ -37,13 +39,11 @@ package body  Luxury_Vehicle is
    -- The procedure is called when the vehicle is started or when the door status changes
    procedure Update_Door_Status(V : in out Luxury_Car) is
    begin
-      if Sensor_System.Is_Door_Open(V.Car_Sensor) then
-         V.Current_Door_Status := Vehicle_System.Door_Open;
-         Put_Line("Door is open vehicle cannot move");
+      if is_Door_Closed(V) then
+         Put_Line("Door is closed.");
       else
-         V.Current_Door_Status := Vehicle_System.Door_Closed;
-         Put_Line("Door is closed");
-      end if;      
+         Put_Line("Door is open.");
+      end if;    
    end Update_Door_Status;
 
    --- Procedure to check if the vehicle can move
@@ -71,46 +71,42 @@ package body  Luxury_Vehicle is
       Occupied     : Boolean := Sensor_System.Seat_Occupied(V.Car_Sensor);
       Seatbelt_On  : Boolean := V.Car_Sensor.Seatbelt_On;
       Clear_Path   : Boolean := Radar_Systems.Is_Clear_To_Move(V.Car_Radar, Threshold);
+      --Sensor_Check_Seat : Boolean := Sensor_System.Check_Seat(V.Car_Sensor);
    begin
 
       -- Visibility check (applies in both modes)
       Sensor_System.Check_Visibility(V.Car_Sensor);
       Radar_Systems.Activate_Radar(V.Car_Radar);
 
-      if not Door_Closed then
-         Put_Line("Warning: Door is open. Vehicle will not move.");
-         V.Speed := 0.0;
-         V.Is_Moving := False;
+      if is_Door_Closed(V) then
+         Put_Line("Door is closed.");
+      else
+          Put_Line("Warning: Door is open. Vehicle will not move.");
+          Vehicle_NotMobile(Vehicle_System.Vehicle(V));
+        
          return;
       end if;
       if not Occupied then
          Put_Line("Warning: Seat not occupied. Vehicle will not move.");
-         V.Speed := 0.0;
-         V.Is_Moving := False;
-         V.Car_Sensor.Seatbelt_On := False; -- Ensure seatbelt is off if no occupant
+         Vehicle_System.Vehicle_NotMobile(Vehicle_System.Vehicle(V));
          return;
       end if;
-      if not Seatbelt_On then
+      if Occupied and not Seatbelt_On then
          Put_Line("Warning: Seatbelt is not fastened. Vehicle will not move.");
-         V.Speed := 0.0;
-         V.Is_Moving := False;
-         V.Car_Sensor.Seatbelt_On := False; -- Ensure seatbelt is off if not fastened
+         Vehicle_System.Vehicle_NotMobile(Vehicle_System.Vehicle(V));
          return;
       end if;
       if not Clear_Path then
          Put_Line("Warning: Obstacle detected too close. Vehicle will not move.");  
-         V.Speed := 0.0;
-         V.Is_Moving := False;
+         Vehicle_System.Vehicle_NotMobile(Vehicle_System.Vehicle(V));
          return;
       end if;
      
       -- Final movement decision
-      if Vehicle_Mobile(V) then
-         V.Is_Moving := True;
+      if Vehicle_Mobile(V, Clear_Path) then
          Put_Line("Vehicle is moving.");
       else
-         V.Speed := 0.0;
-         V.Is_Moving := False;
+        Vehicle_System.Vehicle_NotMobile(Vehicle_System.Vehicle(V));
          Put_Line("Vehicle failed to start moving.");
       end if;
    end;
@@ -125,20 +121,20 @@ end Attempt_Move;
    -- The procedure is called when the vehicle is started or when the radar system is activated
    -- The procedure prints the status of the radar system to the console
    -- The procedure is called when the vehicle is started or when the radar system is activated
-   procedure Enable_Object_Detection(V : in out Luxury_Car) is
-   begin
+   --procedure Enable_Object_Detection(V : in out Luxury_Car) is
+   --Object_Threshold : constant Float := 10.0; -- Example threshold for object detection
+   --begin
       --Radar_Systems.Detect_Object(Radars, Object_Threshold);
-      Put_Line("Object detection enabled.");
-      Radar_Systems.Radar_Scan_Garage_Simulation;
-      if Vehicle_Mobile(V) then
-         Put_Line("Vehicle is mobile and driving to destination.");
-         V.Is_Moving := True;
-      else
-         Put_Line("Vehicle is not mobile, but object detection is enabled.");
-         V.Is_Moving := False;
-      end if;
+   --   Put_Line("Object detection enabled.");
+   --   Radar_Scan_Garage_Simulation(Road_ProfileConfig.Road_Profile);
+   --   if Vehicle_Mobile(V, Radar_Systems.Is_Clear_To_Move(V.Car_Radar, Object_Threshold)) then
+   --      Put_Line("Vehicle is mobile and driving to destination.");
+   --   else
+   --      Put_Line("Vehicle is not mobile, but object detection is enabled.");
+   --      Vehicle_System.Vehicle_NotMobile(Vehicle_System.Vehicle(V));
+   --   end if;
 
-   end Enable_Object_Detection;
+   --end Enable_Object_Detection;
 
    -- Procedure to reduce speed based on object detection
    -- This procedure uses the radar system to detect objects and adjust speed accordingly

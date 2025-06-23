@@ -51,7 +51,7 @@ package body Vehicle_System is
    end Set_Speed;
 
 
-    function Get_Speed(V : Vehicle) return Float is
+   function Get_Speed(V : Vehicle) return Float is
    begin
       return V.Speed;
    end Get_Speed;
@@ -71,7 +71,7 @@ package body Vehicle_System is
       Put_Line("Vehicle stopped.");
    end Vehicle_NotMobile;
 
-      procedure Set_Reservation(V : in out Vehicle) is
+   procedure Set_Reservation(V : in out Vehicle) is
    begin
       V.Is_Reserved := True;
    end Set_Reservation;
@@ -81,19 +81,21 @@ package body Vehicle_System is
       return V.Is_Reserved;
    end Reserve_Vehicle;
 
-
-   function Get_Engine_Status(V : Vehicle) return Boolean is
+   function Get_Door_Status(V : Vehicle) return Door_Status_Type is
    begin
-      return V.Engine_On;
-   end Get_Engine_Status;
-
-
-
-
-  
-
-
-
+      return V.Current_Door_Status;
+   end Get_Door_Status;
    
+   procedure Set_Door_Status(V : in out Vehicle; Status : Door_Status_Type) is
+   begin
+      V.Current_Door_Status := Status;
+      if Status = Door_Open then
+         Put_Line("Door is now open.");
+      else
+         Put_Line("Door is now closed.");
+      end if;
+   end Set_Door_Status;
+
+
 
 end Vehicle_System;
