@@ -1,5 +1,6 @@
 with Vehicle_Constants; use Vehicle_Constants;
 with Radar_Systems, Sensor_System, Vehicle_System, Vehicle_Types;
+with Road_ProfileConfig; use Road_ProfileConfig;
 
 -- This package defines the Luxury Vehicle type and its associated procedures.
 -- It extends the base Vehicle class and includes additional features such as
@@ -28,7 +29,7 @@ package Luxury_Vehicle is
    -- Input : Uses internal state of sensor
    -- Output : status of doors
    ------------------------------------------------------------
-   procedure Update_Door_Status(Lux_Car: in out Luxury_Car);
+   procedure Update_Door_Status(V : in out Luxury_Car);
 
 
    --------------------------------------------------------------
@@ -37,7 +38,7 @@ package Luxury_Vehicle is
    -- Input : Uses internal state of threshold detection
    -- Output : alert driver of object in view of certain range
    ------------------------------------------------------------
-   procedure Enable_Object_Detection(V : in out Luxury_Car);
+   --procedure Enable_Object_Detection(V : in out Luxury_Car);
 
    
 
@@ -62,7 +63,9 @@ package Luxury_Vehicle is
    -- Purpose  : checks if the car is in motion
    -- Input : Uses internal state of sensor
    -- Output : status of doors
-   overriding function Vehicle_Mobile(V : in out Luxury_Car) return Boolean;
+   overriding function Vehicle_Mobile(V : in out Luxury_Car; Path_Clear : Boolean) return Boolean;
+
+   --overriding function Get_Door_Status(V : Vehicle_System.Vehicle) return Vehicle_System.Door_Status_Type;
 
 
    --------------------------------------------------------------

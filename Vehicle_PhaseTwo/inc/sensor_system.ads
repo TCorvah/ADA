@@ -1,6 +1,6 @@
 with Vehicle_Constants;
 with Vehicle_System;
-use Vehicle_System;
+
 package Sensor_System is
 -- This package provides procedures for managing the vehicle sensor system.               
 -- It includes functions to activate and deactivate sensors, check seatbelt status,
@@ -49,7 +49,7 @@ package Sensor_System is
    -- Function to check if the door is open
    -- This function checks the door status and returns True if the door is open, False otherwise.
    -- The function is called to determine if the door is open or closed
-   function  Is_Door_Open (S :in Sensor) return  Boolean;
+   function Is_Door_Open(S :in Sensor) return  Boolean;
 
    -- Function to check if the seat is occupied
    -- This function checks the seat status and returns True if the seat is occupied, False otherwise.

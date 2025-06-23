@@ -34,8 +34,7 @@ package Vehicle_System is
    -- === Getters ===
    function Get_Engine_Status(V : Vehicle) return Boolean;
    function Get_Is_Moving(V : Vehicle) return Boolean;
-   function Get_Door_Status(V : Vehicle) return Door_Status_Type;
-
+   function Get_Door_Status(V : Vehicle) return Door_Status_Type is abstract;
 
 
    -- === Setters ===
