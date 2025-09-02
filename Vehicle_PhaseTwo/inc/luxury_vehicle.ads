@@ -48,7 +48,7 @@ package Luxury_Vehicle is
    -- Purpose  : checks if the door is closed
    -- Input : Uses internal state of sensor
    -- Output : status of doors
-   overriding function is_Door_Closed(V : in out Luxury_Car) return Boolean;
+   overriding function is_Door_Closed(V :  Luxury_Car) return Boolean;
 
    --------------------------------------------------------------
    -- procedure : Attempt_Move
@@ -63,10 +63,12 @@ package Luxury_Vehicle is
    -- Purpose  : checks if the car is in motion
    -- Input : Uses internal state of sensor
    -- Output : status of doors
-   overriding function Vehicle_Mobile(V : in out Luxury_Car; Path_Clear : Boolean) return Boolean;
+   overriding function Vehicle_Mobile(V : Luxury_Car) return Boolean;
 
-   --overriding function Get_Door_Status(V : Vehicle_System.Vehicle) return Vehicle_System.Door_Status_Type;
 
+ 
+ overriding
+   function Get_Door_Status (V : Luxury_Car) return Vehicle_System.Door_Status_Type;
 
    --------------------------------------------------------------
    -- procedure : Turn_Off_Engine

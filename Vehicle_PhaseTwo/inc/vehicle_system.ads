@@ -17,11 +17,11 @@ package Vehicle_System is
    procedure Set_Road_Profile(V : in out Vehicle; Profile : Road_Profile);
 
    -- Movement and door checks (polymorphic)
-   function Vehicle_Mobile(V : in out Vehicle) return Boolean is abstract;
+   function Vehicle_Mobile(V :  Vehicle) return Boolean is abstract;
 
    -- Speed validity enforcement
    procedure Vehicle_NotMobile(V : in out Vehicle);
-   function is_Door_Closed(V : in out Vehicle) return Boolean is abstract;
+   function is_Door_Closed(V : Vehicle) return Boolean is abstract;
 
 
    -- Reservation controls
