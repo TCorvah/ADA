@@ -55,16 +55,18 @@ package body Standard_Vehicle is
 
    -- This Procedure checks the vehicle status is it in motion or not
    -- It also prints a message indicating the vehicle status
-   function Vehicle_Mobile(V : in out Standard) return Boolean is
+  overriding function Vehicle_Mobile(V : Standard) return Boolean is
+   Engine_Status : Boolean := Get_Engine_Status(V);
+   Speed : Float := Get_Speed(V);
    begin
-     return V.Engine_On and V.Speed > 0.0;
+     return Engine_Status and then (Speed > 0.0);
    end Vehicle_Mobile;
 
 
    -- this function checks if the door is closed by evaluating the Current_Door_Status attribute of the Vehicle object.
-   function is_Door_Closed(V : in out Standard) return Boolean is
+   function is_Door_Closed(V : Standard) return Boolean is
    begin
-      return V.Current_Door_Status = Vehicle_System.Door_Closed;
+      return not Sensor_System.Is_Door_Open(V.Car_Sensor);
    end is_Door_Closed;
 
    -- Procedure to check the door status  
@@ -74,41 +76,58 @@ package body Standard_Vehicle is
    -- The procedure updates the Current_Door_Status attribute of the Luxury_Car object
    -- The procedure prints the door status to the console
    -- The procedure is called when the vehicle is started or when the door status changes
-   procedure Update_Door_Status(Standard_Car : in out Standard) is
+   
+
+
+   overriding
+   function Get_Door_Status (V : Standard) return Vehicle_System.Door_Status_Type is
    begin
-      if Sensor_System.Is_Door_Open(Standard_Car.Car_Sensor) then
-         Standard_Car.Current_Door_Status := Vehicle_System.Door_Open;
-         Put_Line("vehicle door is open");
+      if Is_Door_Closed (V) then
+         return Vehicle_System.Door_Closed;
       else
-         Standard_Car.Current_Door_Status := Vehicle_System.Door_Closed;
-         Put_Line("Door is closed");
-      end if;      
+         return Vehicle_System.Door_Open;
+      end if;
+   end Get_Door_Status;
+
+
+   procedure Update_Door_Status(V : in out Standard) is
+    Status : Vehicle_System.Door_Status_Type := Get_Door_Status(V);
+   begin
+       Vehicle_System.Set_Door_Status(Vehicle_System.Vehicle(V), Status);
+       case Status is
+          when Vehicle_System.Door_Closed => Put_Line ("Door is closed.");
+          when Vehicle_System.Door_Open => Put_Line ("Door is open.");
+       end case;
    end Update_Door_Status;
 
    procedure Attempt_Move(Standard_Car : in out Standard; Threshold : Float) is
-   begin
-   -- Simulate door toggle
-   Sensor_System.Toggle_Door(Standard_Car.Car_Sensor);
-   Sensor_System.Toggle_Door(Standard_Car.Car_Sensor); 
-
-   -- Start engine
-   Vehicle_System.Start_Engine(Vehicle_System.Vehicle(Standard_Car));
-   Sensor_System.Activate_Sensor(Standard_Car.Car_Sensor);
-   Update_Door_Status(Standard_Car);
-
-   -- Check conditions
-   declare
       Door_Closed  : Boolean := is_Door_Closed(Standard_Car);
       Occupied     : Boolean := Sensor_System.Seat_Occupied(Standard_Car.Car_Sensor);
       Seatbelt_On  : Boolean := Standard_Car.Car_Sensor.Seatbelt_On;
-      Clear_Path   : Boolean := Radar_Systems.Is_Clear_To_Move(Standard_Car.Car_Radar, Threshold);
+      Speed : Float := Vehicle_System.Get_Speed(Vehicle_System.Vehicle(Standard_Car));
    begin
+     Put_Line ("[Standard ] attempt Move begin");
+              
+      -- Simulate door toggle
+      Sensor_System.Toggle_Door(Standard_Car.Car_Sensor);
+      Sensor_System.Toggle_Door(Standard_Car.Car_Sensor); 
 
+      -- Start engine
+      Vehicle_System.Start_Engine(Vehicle_System.Vehicle(Standard_Car));
+      Sensor_System.Activate_Sensor(Standard_Car.Car_Sensor);
+
+      -- Enviromemnt Sensing
       -- Visibility check (applies in both modes)
       Sensor_System.Check_Visibility(Standard_Car.Car_Sensor);
+      Update_Door_Status(Standard_Car);
+ 
+
+   -- Check conditions
 
       if not Door_Closed then
-         Put_Line("Warning: Door is open.");
+        Put_Line("Warning: Door is open.");
+
+        
       end if;
       if not Occupied then
          Put_Line("Warning: Seat not occupied.");
@@ -116,22 +135,29 @@ package body Standard_Vehicle is
       if not Seatbelt_On then
          Put_Line("Warning: Seatbelt is not fastened.");
       end if;
-      if not Clear_Path then
-         Put_Line("Warning: Obstacle detected.");
-      end if;
+      Sensor_System.Check_Visibility(Standard_Car.Car_Sensor);
+   
+     
         
-            delay 3.0;
-            Put_Line("Standard: Vehicle is in motion regardless of above warnings.");
-      end;
-
+      delay 3.0;
+      Put_Line("Standard: Vehicle is in motion regardless of above warnings.");
+      -- Set speed to a safe value if all conditions are met
+      Vehicle_System.Set_Speed(Vehicle_System.Vehicle(Standard_Car), Standard_Car.Min_Speed);
+      
       -- Final movement decision
       if Vehicle_Mobile(Standard_Car) then
-         Standard_Car.Is_Moving := True;
-         Put_Line("Vehicle is moving.");
+         if Speed >=  Vehicle_Constants.Vehicle_Min_Speed then
+            Put_Line("Vehicle is moving.");
+         end if;
       else
-         Standard_Car.Speed := 0.0;
-         Standard_Car.Is_Moving := False;
-         Put_Line("Vehicle failed to start moving.");
+         if Speed < Vehicle_Constants.Vehicle_Min_Speed then
+            Put_Line("Warning: Speed is below minimum threshold.");
+            Vehicle_System.Vehicle_NotMobile(Vehicle_System.Vehicle(Standard_Car));
+            Put_Line("Vehicle failed to start moving.");
+         else
+            Put_Line("Vehicle failed to start moving.");
+         end if;       
+        
       end if;
    
    end Attempt_Move;

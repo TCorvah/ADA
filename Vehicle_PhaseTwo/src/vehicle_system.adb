@@ -81,10 +81,7 @@ package body Vehicle_System is
       return V.Is_Reserved;
    end Reserve_Vehicle;
 
-   function Get_Door_Status(V : Vehicle) return Door_Status_Type is
-   begin
-      return V.Current_Door_Status;
-   end Get_Door_Status;
+ 
    
    procedure Set_Door_Status(V : in out Vehicle; Status : Door_Status_Type) is
    begin
@@ -95,6 +92,25 @@ package body Vehicle_System is
          Put_Line("Door is now closed.");
       end if;
    end Set_Door_Status;
+
+
+
+   procedure Set_Engine_Status(V : in out Vehicle; On : Boolean) is
+   begin
+      V.Engine_On := On;
+      if not On then
+         V.Is_Moving := False;
+         V.Speed := 0.0;
+      end if;
+   end Set_Engine_Status;
+
+
+   function Get_Is_Moving(V : Vehicle) return Boolean is
+   begin
+      return V.Is_Moving;
+   end Get_Is_Moving;
+
+
 
 
 

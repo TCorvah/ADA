@@ -2,6 +2,7 @@ with Ada.Text_IO; use Ada.Text_IO;
 with Timing_Controller; use Timing_Controller;
 with Ada.Float_Text_IO; use Ada.Float_Text_IO;
 with Vehicle_Constants;use Vehicle_Constants;
+with Vehicle_System;
 
 
 
@@ -181,15 +182,27 @@ package body Sensor_System is
    -- The procedure does not return any value.
    procedure Handle_Object_Detection(V : in out Vehicle_System.Vehicle; Current_Speed : in Float) is
    -- Example threshold for object detection
+      Engine_On : constant Boolean := Vehicle_System.Get_Engine_Status(V);
+      New_Speed : Float := Vehicle_System.Get_Speed(V);
+     
    begin
-      if V.Engine_On and Current_Speed > Vehicle_Constants.Threshold then
-         V.Set_Speed(V.Speed - Vehicle_Constants.Threshold); -- Example: decrease speed if object detected
+      if Engine_On and  then Current_Speed > Vehicle_Constants.Threshold then
+         New_Speed := (Current_Speed - Vehicle_Constants.Threshold); -- Example: decrease speed if object detected
+         if New_Speed < 0.0 then
+            New_Speed := 0.0; -- Ensure speed does not go negative
+         end if;
+
+         Vehicle_System.Set_Speed(V, New_Speed);
       -- Placeholder for object detection logic
          Put_Line("Sensor: Object detected while vehicle is moving, SLOWING DOWN.");
+         if New_Speed = 0.0 then
+            Vehicle_System.Vehicle_NotMobile(V);
+            Put_Line("Vehicle has stopped due to object detection.");
+         end if;
       else
          Put_Line("Sensor: Deaccelerating Vehicle.");
-         V.Is_Moving := False; -- Example: stop the vehicle if object detected
-         V.Set_Speed(0.0); -- Example: stop the vehicle if object detected
+         Vehicle_System.Vehicle_NotMobile(V); -- Example: stop the vehicle if object detected
+         Vehicle_System.Set_Speed(V, 0.0); -- Example: stop the vehicle if object detected
       end if;
 
       -- Implement logic to handle object detection

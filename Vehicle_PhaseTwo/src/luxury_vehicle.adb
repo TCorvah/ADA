@@ -12,23 +12,39 @@ package body  Luxury_Vehicle is
    -- and returns true if the door is closed, false otherwise
    -- The function checks the current door status of the car
    -- The function uses the Vehicle_System package to access the door status
-   function is_Door_Closed(V : in out  Luxury_Car) return Boolean is
+   function is_Door_Closed(V : Luxury_Car) return Boolean is
    begin
       return not Sensor_System.Is_Door_Open(V.Car_Sensor);     
    end is_Door_Closed;
+
+   
+
+    overriding
+   function Get_Door_Status (V : Luxury_Car) return Vehicle_System.Door_Status_Type is
+   begin
+      if Is_Door_Closed (V) then
+         return Vehicle_System.Door_Closed;
+      else
+         return Vehicle_System.Door_Open;
+      end if;
+   end Get_Door_Status;
 
    -- Function to check if the vehicle is mobile
    -- A vehicle is considered mobile if the engine is on, speed is greater than 0,
    -- the door is closed, and the seatbelt is fastened
    -- The function returns true if the vehicle is mobile, false otherwise
    -- The function checks the engine status, speed, door status, and seatbelt status
-   function Vehicle_Mobile(V : in out Luxury_Car; Path_Clear : Boolean) return Boolean is
+   overriding function Vehicle_Mobile(V : Luxury_Car) return Boolean is
    begin
       Sensor_System.Check_Seat(V.Car_Sensor);
-      return Get_Engine_Status(V) and (Get_Speed(V) > 0.0) and is_Door_Closed(V)
-         and Sensor_System.Seat_Occupied(V.Car_Sensor) and Path_Clear;           
+      return
+       Get_Engine_Status(V) and then
+       Get_Door_Status(V) = Door_Closed and then
+      (Get_Speed(V) > 0.0);
+                
    end Vehicle_Mobile;
    
+
 
    -- Procedure to check the door status  
    -- This procedure updates the door status of the luxury car
@@ -38,12 +54,13 @@ package body  Luxury_Vehicle is
    -- The procedure prints the door status to the console
    -- The procedure is called when the vehicle is started or when the door status changes
    procedure Update_Door_Status(V : in out Luxury_Car) is
+    Status : Vehicle_System.Door_Status_Type := Get_Door_Status(V);
    begin
-      if is_Door_Closed(V) then
-         Put_Line("Door is closed.");
-      else
-         Put_Line("Door is open.");
-      end if;    
+       Vehicle_System.Set_Door_Status(Vehicle_System.Vehicle(V), Status);
+       case Status is
+          when Vehicle_System.Door_Closed => Put_Line ("Door is closed.");
+          when Vehicle_System.Door_Open => Put_Line ("Door is open.");
+       end case;
    end Update_Door_Status;
 
    --- Procedure to check if the vehicle can move
@@ -101,16 +118,25 @@ package body  Luxury_Vehicle is
          Vehicle_System.Vehicle_NotMobile(Vehicle_System.Vehicle(V));
          return;
       end if;
+
+      Vehicle_System.Set_Speed(Vehicle_System.Vehicle(V), V.Min_Speed);
+      Put_Line("All conditions met. Vehicle is attempting to move.");
      
       -- Final movement decision
-      if Vehicle_Mobile(V, Clear_Path) then
+      if Vehicle_Mobile(V) then
          Put_Line("Vehicle is moving.");
       else
         Vehicle_System.Vehicle_NotMobile(Vehicle_System.Vehicle(V));
          Put_Line("Vehicle failed to start moving.");
       end if;
+      Put_Line ("[Luxury Car Status] Engine On: " & Boolean'Image(Get_Engine_Status(V)) &
+                ", Speed: " & Float'Image(Get_Speed(V)) &
+                ", Door Status: " & Vehicle_System.Door_Status_Type'Image(Get_Door_Status(V)) &
+                ", Is Moving: " & Boolean'Image(Get_Is_Moving(V)));
    end;
 end Attempt_Move;
+
+
 
 
    -- Procedure to enable object detection
