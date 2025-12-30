@@ -2,7 +2,7 @@ with Vehicle_Constants;
 with Vehicle_System;
 
 package Sensor_System is
--- This package provides procedures for managing the vehicle sensor system.               
+-- This package provides procedures for managing the vehicle sensor system and is a composition class of the Vehicle_System package.              
 -- It includes functions to activate and deactivate sensors, check seatbelt status,
 -- check visibility, and handle object detection.
 -- The package is designed to work with the Vehicle_System package and is used to enhance vehicle safety and performance.
@@ -16,6 +16,8 @@ package Sensor_System is
    -- The time of day is used to determine if the headlights should be turned on or off.
    type Time_of_Day is (Day, Night);
 
+ 
+
 -- Define the sensor record type
    -- This record holds the details of the vehicle sensor system, including its status, door status, detected weight, seatbelt status, visibility, and headlights status.
    -- The record is used to store the sensor system's state and pass it between procedures.
@@ -26,8 +28,9 @@ package Sensor_System is
       Door_Open : Boolean := False;
       Detected_Weight : Float := 20.0;   -- Weight of the detected object
       Seatbelt_On : Boolean := False;
-      Visibility : Time_of_Day := Night; -- from 0.0 (dark) to 1.0 (bright)
+      Visibility : Time_of_Day := Night; 
       Headlights_On : Boolean := False;
+      Engine_On : Boolean := False;
    end record;
 
 
@@ -45,6 +48,13 @@ package Sensor_System is
    -- The procedure is called to stop the sensor system and cease monitoring the vehicle's status.
    -- The procedure is used to control the sensor system's functionality and behavior.
    procedure Deactivate_Sensor(S : in out Sensor);
+
+   -- Procedure to check the engine status
+   -- This procedure checks the engine status and updates the sensor system accordingly.
+   -- The procedure is called to determine if the engine is running or stopped.
+   -- The procedure is used to control the engine system and ensure vehicle performance.
+   procedure Engine_Status_Check(S : in Sensor);
+  
 
    -- Function to check if the door is open
    -- This function checks the door status and returns True if the door is open, False otherwise.
@@ -81,6 +91,8 @@ package Sensor_System is
    procedure Check_Seat(S : Sensor);
 
 
+
+
    -- Procedure to check the visibility conditions
    -- This procedure checks the visibility conditions and returns True if the headlights should be turned on, False otherwise.
    -- The procedure is called to determine if the headlights should be activated based on the time of day.
@@ -93,10 +105,6 @@ package Sensor_System is
    -- The procedure is used to control the headlights system and ensure visibility during night conditions
    procedure Update_Headlights(S : in out Sensor);
 
-   -- Procedure to handle object detection
-   -- This procedure checks the distance to the detected object and updates the object detection status accordingly.    
-   -- The procedure is called to determine if the vehicle can move based on the sensor input.
-   -- The procedure is used to control the sensor system's functionality and behavior.
-   procedure Handle_Object_Detection(V : in out Vehicle_System.Vehicle; Current_Speed : in Float);
+ 
 
 end Sensor_System;
