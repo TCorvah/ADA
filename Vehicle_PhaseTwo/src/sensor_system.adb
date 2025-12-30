@@ -31,6 +31,7 @@ package body Sensor_System is
       Put_Line ("Sensor: Activated");
    end Activate_Sensor;
 
+
    -- This procedure deactivates the sensor system by setting its status to "Off".
    -- It also prints a message indicating that the sensor has been deactivated.  
    -- The procedure takes a Sensor object as an input parameter and modifies its status.
@@ -50,6 +51,15 @@ package body Sensor_System is
       return S.Door_Open;
    end Is_Door_Open;
 
+   procedure Engine_Status_Check(S : in Sensor) is
+   begin
+      if S.Engine_On = True then
+         Put_Line ("Sensor: Engine is Running");
+      else
+         Put_Line ("Sensor: Engine is Stopped");
+      end if;
+   end Engine_Status_Check;
+
    -- This function checks if the seat is occupied by evaluating the Detected_Weight attribute of the Sensor object.
    -- It returns a Boolean value indicating the seat occupancy status.
    -- The function takes a Sensor object as an input parameter and returns a Boolean value.
@@ -66,13 +76,13 @@ package body Sensor_System is
    -- The procedure takes a Sensor object as an input parameter and modifies its status.
    -- The procedure does not return any value.
    -- The procedure uses the not operator to toggle the Door_Open attribute.
-   -- If the door is open, it prints "Vehicle door is open", otherwise it prints "Vehicle door is now close".
+   -- If the door is open, it toggles the state and prints "door is close"", otherwise it prints "Vehicle door is now open".
    -- The procedure does not return any value.
    procedure Toggle_Door(S : in out Sensor) is
    begin
       S.Door_Open := not S.Door_Open;
       if S.Door_Open then
-         Put_Line ("Vehicle door is open" );
+         Put_Line ("human object detected, Vehicle door is open" );
       else
          Put_Line ("Vehicle door is now close");
       end if;
@@ -126,14 +136,14 @@ package body Sensor_System is
          -- Placeholder for visibility check logic
          Put_Line("Sensor: Initializing headlight timer.");
          Put_Line("Sensor: scanning for night time visibility.");
-         Timing_Controller.Headlight_Timer_task.Set_Headlight_Timer(5.0);
+         Timing_Controller.Headlight_Timer_task.Set_Headlight_Timer(0.1);
          -- Wait for a duration longer than the timer to observe the output
-         delay 6.0;
+         delay 0.2;
 
          Put_Line("Sensor: Night Time detected.");
          Timing_Controller.Headlight_Timer_task.Shutdown;
          -- Allow time for the shutdown message to be displayed
-         delay 1.0;
+         delay 0.10;
          S.Headlights_On := True;
          Put_Line("Sensor: Headlights turned ON, Time of Day is night.");
       else
@@ -169,44 +179,6 @@ package body Sensor_System is
       end if;
    end Update_Headlights;
 
-   -- This procedure handles object detection while the vehicle is in motion.
-   -- It evaluates the Engine_On and Current_Speed attributes of the Vehicle object.
-   -- It prints a message indicating whether the vehicle is moving or not.
-   -- The procedure takes a Vehicle object and the current speed as input parameters.
-   -- The procedure modifies the Vehicle object and does not return any value.
-   -- The procedure uses the Engine_On attribute to determine if the engine is on.
-   -- If the engine is on and the current speed is greater than the threshold, it decreases the speed.
-   -- It also prints "Sensor: Object detected while vehicle is moving, SLOWING DOWN".
-   -- If the engine is off or the current speed is less than or equal to the threshold, it stops the vehicle.
-   -- It also prints "Sensor: Deaccelerating Vehicle".
-   -- The procedure does not return any value.
-   procedure Handle_Object_Detection(V : in out Vehicle_System.Vehicle; Current_Speed : in Float) is
-   -- Example threshold for object detection
-      Engine_On : constant Boolean := Vehicle_System.Get_Engine_Status(V);
-      New_Speed : Float := Vehicle_System.Get_Speed(V);
-     
-   begin
-      if Engine_On and  then Current_Speed > Vehicle_Constants.Threshold then
-         New_Speed := (Current_Speed - Vehicle_Constants.Threshold); -- Example: decrease speed if object detected
-         if New_Speed < 0.0 then
-            New_Speed := 0.0; -- Ensure speed does not go negative
-         end if;
-
-         Vehicle_System.Set_Speed(V, New_Speed);
-      -- Placeholder for object detection logic
-         Put_Line("Sensor: Object detected while vehicle is moving, SLOWING DOWN.");
-         if New_Speed = 0.0 then
-            Vehicle_System.Vehicle_NotMobile(V);
-            Put_Line("Vehicle has stopped due to object detection.");
-         end if;
-      else
-         Put_Line("Sensor: Deaccelerating Vehicle.");
-         Vehicle_System.Vehicle_NotMobile(V); -- Example: stop the vehicle if object detected
-         Vehicle_System.Set_Speed(V, 0.0); -- Example: stop the vehicle if object detected
-      end if;
-
-      -- Implement logic to handle object detection
-   end Handle_Object_Detection;
-
+   
 
 end Sensor_System;
