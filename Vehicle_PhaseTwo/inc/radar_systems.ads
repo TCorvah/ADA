@@ -1,21 +1,12 @@
 with Road_ProfileConfig;
+with Vehicle_Constants;use Vehicle_Constants;
 
--- This file is part of the Vehicle Project Phase One
--- This package provides the radar system functionality for the vehicle project.
--- It includes procedures and functions for detecting objects, adjusting speed, and checking if the vehicle can move.
--- The radar system is designed to work with the vehicle's sensor system and vehicle types.
--- The package is used to enhance the vehicle's safety and performance by providing real-time data on the surrounding environment.
--- The radar system is a critical component of the vehicle's overall functionality.
--- The package is designed to be modular and reusable, allowing for easy integration with other vehicle systems.
--- The package is written in Ada and follows best practices for software development.
--- The package is designed to be easy to understand and maintain, with clear documentation and comments.
--- The package is intended for use in a vehicle simulation project and may be used in other projects as well.
+-- This package implements the vehicle radar subsystem.
+-- The radar measures object distance within the vehicle’s field of view,
+-- classifies detected objects based on proximity, and reports structured
+-- data to the vehicle system to support safe and informed decision-making.
 
 package Radar_Systems is
-   Min_Detection_Range : constant Float := 0.5; -- Minimum distance to detect an object, Vehicle will stop
-   Max_Detection_Range : constant Float := 100.0; -- Maximum distance to detect an object, Vehicle will slow down
-   Detection_Angle :  constant Float := 45.0; -- Angle of detection in degrees
-
    -- Define the radar status enumeration
    -- This enumeration defines the possible states of the radar system.
    -- The states include Off and On, indicating whether the radar is active or inactive.
@@ -34,7 +25,8 @@ package Radar_Systems is
       Object_Detected : Boolean := False;
       Object_Distance   : Float   := 0.0;
       Object_In_Motion : Boolean := False;
-      Field_Of_View : Radar_Sector := Front;
+      Field_Of_View : Float := Vehicle_Constants.Angle_Quarter_Circle; -- 90 degrees, the cone shape where the radar can detect objects;
+      Center_Angle : Float := 0.0; -- Centered at 0 degrees (front of the vehicle)
    end record;
 
    -----------------------------------------------------------
@@ -55,24 +47,38 @@ package Radar_Systems is
    -- The procedure is designed to be modular and reusable, allowing for easy integration with other vehicle systems.
    procedure Deactivate_Radar(R : in out Radar);
 
+
+   -- Function to check if the radar data indicates it is clear to move
+   -- This function evaluates the radar data against a specified threshold to determine if it is safe for the vehicle to move.
+   -- The function returns True if the radar data indicates it is clear to move, otherwise it returns False.
+   -- The function is called to assess the safety of vehicle movement based on radar input.
+   -- The function is used to support decision-making in the vehicle's control systems.
    function Is_Clear_To_Move(Radar_Data : in Radar; Threshold : Float) return Boolean;
-   function Sector_Center_Angle(Sector : Radar_Sector) return Float;
+
+-- Returns the geometric center angle (in degrees) of a radar sector.
+
+-- Each sector represents a 90-degree quadrant of the 360-degree field of view.
+function Sector_Center_Angle(Sector : Radar_Sector) return Float;
+
+   -- Function to normalize an angle to the range [0, 360) degrees
+   -- This function takes an angle in degrees and normalizes it to the range of 0 to 360 degrees.
+   -- The function is used to ensure that angles are consistently represented within the specified range.
+   -- The function is called to support calculations and comparisons involving angles in the vehicle's
    function Normalize_Angle(Angle : Float) return Float;
+
+   --- Function to get the radar sector based on a given angle
+   -- The normalize angle is called in here to ensure the returned angle is within the range of 0 to 360 degrees.
    function Get_Sector_Angle(Sector : Float) return Radar_Sector;
+
+
+   -- Function to analyze radar data and determine the appropriate radar status
+   -- based on the distance to the detected object and the road profile.
    function Analyze_Radar_Data(Distance: Float; Road_Profile: Road_ProfileConfig.Road_Profile) return Radar_Data;
 
-      -- This function normalizes the angle to be within the range of -180 to 180 degrees.
-      -- The function is used to ensure that angles are consistent and can be compared easily.
-      -- The function is designed to be modular and reusable, allowing for easy integration with other vehicle systems.
 
-   -- Procedure to simulate radar scan
-   -- This procedure simulates the radar scan by generating random distances and angles.
-   -- The procedure is called to test the radar system's functionality and behavior.
-   -- The procedure is used to control the radar system's functionality and behavior.
-   -- The procedure is designed to be modular and reusable, allowing for easy integration with other vehicle systems.
-   -- The procedure is written in Ada and follows best practices for software development.
-   procedure Radar_Scan_Highway_Simulation;
-   procedure Radar_Scan_Garage_Simulation(Road : Road_ProfileConfig.Road_Profile);
+  
+
+
  
 
 end Radar_Systems;
