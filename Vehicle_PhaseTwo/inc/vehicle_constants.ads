@@ -1,4 +1,4 @@
-with Vehicle_Types; use Vehicle_Types;
+
 
 package Vehicle_Constants is
 
@@ -25,11 +25,18 @@ package Vehicle_Constants is
    Number_of_Sectors : constant Integer := 4; -- Number of radar sectors (front, right, rear, left)
 
 
-   -- minimum distance of object within radar detection in ft
-   Minimum_Detection_Range : constant Float := 2.0; 
+   -- Minimum distance (in feet) at which the radar can reliably detect an object.
+   -- Objects closer than this are considered sensor blind spots but can easily be seen by the driver.
+   Minimum_Detection_Range : constant Float := 2.0;
 
-   -- maximum distance of object within radar detection in ft
-   Maximum_Detection_Range : constant Float := 100.0; 
+   -- Maximum distance (in feet) at which the radar can reliably detect an object.
+   -- Objects beyond this distance are outside radar sensing capability and maybe consider clear as no 
+   -- immediate threat to vehicle safety detected.
+   Maximum_Detection_Range : constant Float := 100.0;
+
+   Min_Caution_Range : constant Float := 5.0; -- Minimum distance to trigger caution alert
+
+
    
    -- Field of view angle for each radar sector (in degrees).
    -- Each sector covers a 90-degree quadrant of the 360-degree field of view.
@@ -40,7 +47,7 @@ package Vehicle_Constants is
    Front_Sector_Midpoint : constant Float := 0.0; -- 0 degrees for front sector
    Right_Sector_Midpoint : constant Float := 90.0; -- 90 degrees for right sector
    Rear_Sector_Midpoint : constant Float := 180.0; -- 180 degrees for rear sector
-   Left_Sector_Midpoint : constant Float := 270.0;
+   Left_Sector_Midpoint : constant Float := 270.0;  -- 270 degrees for left sector
 
 
 -- Maximum allowable angular deviation (in degrees) from a sector's midpoint.
