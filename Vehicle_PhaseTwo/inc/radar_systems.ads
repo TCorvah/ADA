@@ -1,4 +1,4 @@
-with Road_ProfileConfig;
+
 with Vehicle_Constants;use Vehicle_Constants;
 
 -- This package implements the vehicle radar subsystem.
@@ -15,7 +15,8 @@ package Radar_Systems is
    -- The radar status is a critical component of the vehicle's safety and performance.
  type Radar_Status is (Off, On);
  type Radar_Sector is (Front, Rear, Left, Right);
- type Radar_Data is (Emergency_Stop, Slow_Down, Caution, Clear_To_Move);
+ type Radar_Range_Zone is (Close, Medium, Far, Outside_Range);
+ type Radar_Angular_Zone is (Strong, Medium, Weak, Outside_FOV);
 
    -- Define the radar record type
    -- This record holds the details of the radar system, including its status, object detection status, distance to the object, and motion status.
@@ -24,9 +25,13 @@ package Radar_Systems is
       Status  : Radar_Status := Off;
       Object_Detected : Boolean := False;
       Object_Distance   : Float   := 0.0;
-      Object_In_Motion : Boolean := False;
-      Field_Of_View : Float := Vehicle_Constants.Angle_Quarter_Circle; -- 90 degrees, the cone shape where the radar can detect objects;
-      Center_Angle : Float := 0.0; -- Centered at 0 degrees (front of the vehicle)
+      Object_Angle      : Float   := 0.0;
+      Object_In_Motion  : Boolean := False;
+      Field_Of_View : Float := Vehicle_Constants.Angle_Sector_FOV; -- 90 degrees, the cone shape where the radar can detect objects;
+      Center_Angle : Float; -- The center angle of the radar sector where the object is detected
+      Sector : Radar_Sector;
+      Angular_Zone : Radar_Angular_Zone;
+      Distance_Zone : Radar_Range_Zone;
    end record;
 
    -----------------------------------------------------------
@@ -48,16 +53,9 @@ package Radar_Systems is
    procedure Deactivate_Radar(R : in out Radar);
 
 
-   -- Function to check if the radar data indicates it is clear to move
-   -- This function evaluates the radar data against a specified threshold to determine if it is safe for the vehicle to move.
-   -- The function returns True if the radar data indicates it is clear to move, otherwise it returns False.
-   -- The function is called to assess the safety of vehicle movement based on radar input.
-   -- The function is used to support decision-making in the vehicle's control systems.
-   function Is_Clear_To_Move(Radar_Data : in Radar; Threshold : Float) return Boolean;
-
 -- Returns the geometric center angle (in degrees) of a radar sector.
-
 -- Each sector represents a 90-degree quadrant of the 360-degree field of view.
+-- There are four sectors: Front (0°), Right (90°), Rear (180°), and Left (270°) with their respective midpoints.
 function Sector_Center_Angle(Sector : Radar_Sector) return Float;
 
    -- Function to normalize an angle to the range [0, 360) degrees
@@ -68,17 +66,22 @@ function Sector_Center_Angle(Sector : Radar_Sector) return Float;
 
    --- Function to get the radar sector based on a given angle
    -- The normalize angle is called in here to ensure the returned angle is within the range of 0 to 360 degrees.
+   -- the function returns the radar sector (Front, Rear, Left, Right) corresponding to the given angle of the sector.
    function Get_Sector_Angle(Sector : Float) return Radar_Sector;
 
+   -- Function to determine angular closeness of the detected object to the center of the radar sector
+   -- The function takes the angle difference between the detected object and the sector center angle as input
+   -- It returns the detection zone classification (Strong, Medium, Weak, Outside_FOV)
+   function Angular_Accuracy_Zone(Angle_Diff: Float) return Radar_Angular_Zone;
 
-   -- Function to analyze radar data and determine the appropriate radar status
-   -- based on the distance to the detected object and the road profile.
-   function Analyze_Radar_Data(Distance: Float; Road_Profile: Road_ProfileConfig.Road_Profile) return Radar_Data;
+   --function returns the range accuracy of an object based on its distance from the radar.
+   -- a smaller distance of detection implies a higher accuracy of the radar reading.
+   -- the function classifies the distance into zones: Close, Medium, Far, Outside_Range.
+   function Range_Accuracy_Zone(Distance : Float) return Radar_Range_Zone;
 
-
-  
-
-
- 
+   -- Function to detect an object based on its distance and angle
+   -- The function determines the radar sector, calculates the angle difference from the sector center,
+   -- and classifies the detection zone and distance zone of the detected object.
+   function Detect_Object(Object_Distance : Float; Object_Angle : Float) return Radar;
 
 end Radar_Systems;
