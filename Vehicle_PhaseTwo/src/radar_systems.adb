@@ -54,14 +54,22 @@ package body Radar_Systems is
    function Get_Sector_Angle(Sector : Float) return Radar_Sector is
       A : Float := Normalize_Angle(Sector);
    begin
-      if (A >= Vehicle_Constants.Left_Sector_End) or else  (A < Vehicle_Constants.Front_Sector_End) then
+      -- FRONT: 315° -> 360° and 0° -> 45°
+      if (A >= Vehicle_Constants.Front_Sector_Start) or else  (A <= Vehicle_Constants.Front_Sector_End) then
          return Radar_Systems.Front;
-      elsif A >= Vehicle_Constants.Right_Sector_Start and then A < Vehicle_Constants.Right_Sector_End then
+
+      -- RIGHT: 45° -> 135°
+      elsif A >= Vehicle_Constants.Right_Sector_Start and then A <= Vehicle_Constants.Right_Sector_End then
          return Radar_Systems.Right;
-      elsif A >= Vehicle_Constants.Rear_Sector_Start and then A < Vehicle_Constants.Rear_Sector_End then
+
+      -- REAR: 135° -> 225°
+      elsif A >= Vehicle_Constants.Rear_Sector_Start and then A <= Vehicle_Constants.Rear_Sector_End then
          return Radar_Systems.Rear;
-      elsif A >= Vehicle_Constants.Left_Sector_Start and then A < Vehicle_Constants.Left_Sector_End   then
+
+      -- LEFT: 225° -> 315°
+      elsif A >= Vehicle_Constants.Left_Sector_Start and then A <=  Vehicle_Constants.Left_Sector_End   then
          return Radar_Systems.Left;
+
       else
          return Radar_Systems.Front; -- Should never reach here if normalization works
       end if;
@@ -120,17 +128,21 @@ package body Radar_Systems is
       end if;
    end Angular_Accuracy_Zone;
 
-
+   -- function to determine the range accuracy zone based on the object distance from the radar.
+   -- A closer object distance implies a higher accuracy of the radar reading.
+   -- The function classifies the distance into zones: Close, Medium, Far, Outside_Range
    function Range_Accuracy_Zone(Distance : Float) return Radar_Range_Zone is
    begin
-       if Distance < (Vehicle_Constants.Minimum_Detection_Range) then
+       if Distance > Vehicle_Constants.Maximum_Detection_Range then
          return Outside_Range;
-      elsif Distance <= (Vehicle_Constants.Maximum_Detection_Range / 4.0) then   
+
+       elsif Distance <=  (Vehicle_Constants.Maximum_Detection_Range / 3.0) then
          return Close;
-      elsif Distance <= Vehicle_Constants.Maximum_Detection_Range then
-         return Far;
+
+      elsif Distance < (Vehicle_Constants.Maximum_Detection_Range) then   
+         return Medium;    
       else
-         return Outside_Range;
+         return Far; 
       end if;
    end Range_Accuracy_Zone;
 
@@ -142,29 +154,46 @@ package body Radar_Systems is
       Angle_Diff : Float;
       Angular_Zone : Radar_Angular_Zone;
       Distance_Zone : Radar_Range_Zone;
+      True_Object_Angle : Float;
       Data : Radar;
    begin
-      -- Determine the radar sector based on the object angle
+      -- Determine the radar sector based on the object angle(any of the 4 quadrants)
       Sector := Get_Sector_Angle(Object_Angle);
 
-      -- Get the center angle of the determined sector
+      -- normalise  Center angle to only return the midpoint of each quadrant
+      Center_Angle := Normalize_Angle(Center_Angle);
+
+      -- Get only the quadrant midpoint angle
       Center_Angle := Sector_Center_Angle(Sector);
 
       -- Calculate the absolute difference between the object angle and the sector center angle
       Angle_Diff  := abs(Normalize_Angle(Object_Angle) - Center_angle);
-      if Angle_Diff > (Vehicle_Constants.Angle_Sector_FOV * 2.0) then
+      if Angle_Diff >  Vehicle_Constants.Full_Circle_Angle/2.0 then
          Angle_Diff := Vehicle_Constants.Full_Circle_Angle - Angle_Diff;
       end if;
 
-      -- Determine the detection zone based on the angle difference
+      -- Determine angular accuracy zone based on the angle difference
+      -- this returns a classification of how close the object angle is to the sector midpoint.
+      -- Example: If the object is in the right sector(midpoint 90 degrees) and the object angle is 100 degrees
+      -- the angle difference is 10 degrees which is within the detection angle of 45 degrees.
+     
+      -- Determine angular accuracy zone based on the angle difference
+      -- this returns a classification of how close the object angle is to the sector midpoint.
+      -- Example: If the object is in the right sector(midpoint 90 degrees) and the object angle is 100 degrees
+      -- the angle difference is 10 degrees which is within the detection angle of 45 degrees.
+      -- Example: If the object is in the rear sector(midpoint 180 degrees) and the object angle is 200 degrees
+      -- the angle difference is 20 degrees which is within the detection angle of 45 degrees.
       Angular_Zone  := Angular_Accuracy_Zone(Angle_Diff);
+
+      -- gives the true object angle from the sector midpoint
+      True_Object_Angle := abs(Angle_Diff);
 
       if Angular_Zone  = Outside_FOV then
          Data.Object_Detected := False;
          return Data;
       end if;
 
-      -- Determine the distance zone based on the object distance
+      -- Determine the range accuracy zone based on the object distance
       Distance_Zone := Range_Accuracy_Zone(Object_Distance);
       if Distance_Zone = Outside_Range then
          Data.Object_Detected := False;
@@ -177,6 +206,8 @@ package body Radar_Systems is
       Data.Object_Angle := Object_Angle;     
       Data.Center_Angle := Center_angle;
       Data.Angular_Zone := Angular_Zone;
+      Data.Distance_Zone := Distance_Zone;
+      Data.True_Object_Angle := True_Object_Angle;
       Data.Sector := Sector;
       return Data;
    end Detect_Object;
