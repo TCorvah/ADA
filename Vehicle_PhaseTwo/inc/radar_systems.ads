@@ -32,6 +32,7 @@ package Radar_Systems is
       Sector : Radar_Sector;
       Angular_Zone : Radar_Angular_Zone;
       Distance_Zone : Radar_Range_Zone;
+      True_Object_Angle : Float; -- The actual angle of the detected object before any normalization
    end record;
 
    -----------------------------------------------------------
