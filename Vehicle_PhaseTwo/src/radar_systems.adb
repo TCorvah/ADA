@@ -117,9 +117,9 @@ package body Radar_Systems is
    -- A high accuracy of detection is when the object angle is within one-third of the detection angle from the sector midpoint.    
    function Angular_Accuracy_Zone(Angle_Diff: Float) return Radar_Angular_Zone is
    begin 
-      if Angle_Diff <= Vehicle_Constants.Detection_Angle / 3.0 then
+      if Angle_Diff <= Vehicle_Constants.Detection_Angle / Float(3.0)  then
          return Strong;
-      elsif Angle_Diff <= (2.0 * Vehicle_Constants.Detection_Angle) / 3.0 then
+      elsif Angle_Diff <= (2.0 * Vehicle_Constants.Detection_Angle) / Float(3.0) then
          return Medium;
       elsif Angle_Diff <= Vehicle_Constants.Detection_Angle then
          return Weak;
@@ -132,14 +132,16 @@ package body Radar_Systems is
    -- A closer object distance implies a higher accuracy of the radar reading.
    -- The function classifies the distance into zones: Close, Medium, Far, Outside_Range
    function Range_Accuracy_Zone(Distance : Float) return Radar_Range_Zone is
+     Close_Threshold : constant Float := Vehicle_Constants.Maximum_Detection_Range / Float(3.0);
+     Far_Threshold : constant Float := (2.0 * Vehicle_Constants.Maximum_Detection_Range) / Float(3.0);
    begin
        if Distance > Vehicle_Constants.Maximum_Detection_Range then
          return Outside_Range;
 
-       elsif Distance <=  (Vehicle_Constants.Maximum_Detection_Range / 3.0) then
+       elsif Distance <= Close_Threshold then  -- remove all magic numbers
          return Close;
 
-      elsif Distance < (Vehicle_Constants.Maximum_Detection_Range) then   
+      elsif Distance <= Far_Threshold  then   
          return Medium;    
       else
          return Far; 
@@ -168,7 +170,7 @@ package body Radar_Systems is
 
       -- Calculate the absolute difference between the object angle and the sector center angle
       Angle_Diff  := abs(Normalize_Angle(Object_Angle) - Center_angle);
-      if Angle_Diff >  Vehicle_Constants.Full_Circle_Angle/2.0 then
+      if Angle_Diff >  Vehicle_Constants.Half_Circle_Angle then  --removing the  magic 2.0 as compiler can interpret it as float, double etc.
          Angle_Diff := Vehicle_Constants.Full_Circle_Angle - Angle_Diff;
       end if;
 
