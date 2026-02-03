@@ -42,9 +42,12 @@ package Vehicle_Constants is
    -- Each sector covers a 90-degree quadrant of the 360-degree field of view.
    Angle_Sector_FOV : constant Float := Full_Circle_Angle / Float(Number_of_Sectors);
 
+   -- Half circle angle constant for calculations. 
+   Half_Circle_Angle : constant Float := Full_Circle_Angle / Float(2.0); -- Half circle angle in degrees
+
    -- Midpoints of each radar sector (in degrees).
    -- These midpoints represent the center angles of the front, right, rear, and left
-   Front_Sector_Midpoint : constant Float := 0.0; -- 0 degrees for front sector
+   Front_Sector_Midpoint : constant Float := 360.0; -- 0 degrees for front sector but 360 to avoid some weird math logic
    Right_Sector_Midpoint : constant Float := 90.0; -- 90 degrees for right sector
    Rear_Sector_Midpoint : constant Float := 180.0; -- 180 degrees for rear sector
    Left_Sector_Midpoint : constant Float := 270.0;  -- 270 degrees for left sector
@@ -54,7 +57,7 @@ package Vehicle_Constants is
 -- This value represents half of the sector field-of-view (90° FOV → 45°).
 -- A radar object is detected within a sector if its angle falls within this deviation
 -- from the sector's midpoint.
-Detection_Angle : constant Float := Angle_Sector_FOV / 2.0;
+Detection_Angle : constant Float := Angle_Sector_FOV / Float(2.0);
 
 
 
@@ -65,7 +68,7 @@ Detection_Angle : constant Float := Angle_Sector_FOV / 2.0;
 
    -- Precomputed Sector Angles for Radar Detection using 90-degree sectors (front centered midpoint at 0 degrees)
    Front_Sector_Start : constant Float := Full_Circle_Angle - Detection_Angle; -- 315 degrees for start of front sector
-   Front_Sector_End : constant Float := Front_Sector_Midpoint + Detection_Angle; -- 45 degrees for end of front sector
+   Front_Sector_End : constant Float :=  Front_Sector_Midpoint - (Full_Circle_Angle - Detection_Angle); -- 45 degrees for end of front sector, only different because of 360 degrees
    Right_Sector_Start : constant Float := Right_Sector_Midpoint - Detection_Angle; -- 45 degrees for start of right sector
    Right_Sector_End : constant Float :=  Right_Sector_Midpoint + Detection_Angle; --135 degrees for end of right sector
    Rear_Sector_Start : constant Float := Rear_Sector_Midpoint - Detection_Angle; -- 135 degrees for start of back sector
