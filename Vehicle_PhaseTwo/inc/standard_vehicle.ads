@@ -34,7 +34,7 @@ package Standard_Vehicle is
       Model : Vehicle_Types.Vehicle_Type := Vehicle_Types.Standard_cars;
       Cost : Float := 50.0;
       Miles_Per_Gallon : Float := 20.0; 
-         Min_Speed : Float := Vehicle_Constants.Vehicle_Min_Speed; -- Speed of the luxury car
+      Min_Speed : Float := Vehicle_Constants.Vehicle_Min_Speed; -- Speed of the luxury car
       Max_Speed : Float := Vehicle_Constants.Vehicle_Max_Speed; -- Maximum speed of the luxury car
 end record;
    -- This procedure checks the seatbelt status and displays a warning if not fastened.

@@ -1,5 +1,8 @@
 with Vehicle_Constants; use Vehicle_Constants;
-with Radar_Systems, Sensor_System, Vehicle_System, Vehicle_Types;
+with Radar_Systems; use Radar_Systems;
+with Sensor_System; use Sensor_System;
+with Vehicle_System; use Vehicle_System;
+with Vehicle_Types; use Vehicle_Types;
 with Road_ProfileConfig; use Road_ProfileConfig;
 
 -- This package defines the Luxury Vehicle type and its associated procedures.
@@ -12,14 +15,13 @@ with Road_ProfileConfig; use Road_ProfileConfig;
 -- along with additional attributes specific to luxury vehicles, such as cost and miles per gallon.
 -- The package is designed to be used in conjunction with the Vehicle_System and Vehicle_Types packages.
 package Luxury_Vehicle is
-
-
+   
    type Luxury_Car is new Vehicle_System.Vehicle with record
       Car_Sensor : Sensor_System.Sensor;
       Car_Radar : Radar_Systems.Radar;
       luxury_cost : Float := Vehicle_Constants.Luxury_Rental_Cost;
       miles_gallon : Float := Vehicle_Constants.Luxury_MPG;
-      Lux_Model : Vehicle_Types.Vehicle_Type := Vehicle_Types.Luxury_cars;
+      Lux_Model : Vehicle_System.Vehicle_CarType.Luxury_Car;
       Min_Speed : Float := Vehicle_Constants.Vehicle_Min_Speed; -- Speed of the luxury car
       Max_Speed : Float := Vehicle_Constants.Vehicle_Max_Speed; -- Maximum speed of the luxury car
    end record;
@@ -64,8 +66,6 @@ package Luxury_Vehicle is
    -- Input : Uses internal state of sensor
    -- Output : status of doors
    overriding function Vehicle_Mobile(V : Luxury_Car) return Boolean;
-
-
  
  overriding
    function Get_Door_Status (V : Luxury_Car) return Vehicle_System.Door_Status_Type;
@@ -77,8 +77,18 @@ package Luxury_Vehicle is
    -- Output : status of door
    procedure Turn_Off_Engine(V : in out Luxury_Car);
 
-   
+   procedure Engine_Status_Check(S : in out Sensor_System.Sensor);
 
-   
+     -- Procedure to manage the vehicle engine status
+   -- This procedure checks the engine status and updates the sensor system accordingly.
+   -- The procedure is called to determine if the engine is running or stopped.
+   -- The procedure is used to control the sensor system's functionality and behavior based on the engine status.
+   procedure Engine_Start(S : in out Sensor_System.Sensor);
+
+  -- Procedure to manage the vehicle engine stop status
+   -- This procedure checks the engine stop status and updates the sensor system accordingly.
+   -- The procedure is called to determine if the engine is stopped.
+   -- The procedure is used to control the sensor system's functionality and behavior based on the engine stop status.
+   procedure Engine_Stop(S : in out Sensor_System.Sensor);
 
 end Luxury_Vehicle;

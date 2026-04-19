@@ -13,10 +13,10 @@ package Radar_Systems is
    -- The enumeration is used to control the radar system's functionality and behavior.
    -- The radar status is used to determine if the radar is currently detecting objects or not.
    -- The radar status is a critical component of the vehicle's safety and performance.
- type Radar_Status is (Off, On);
- type Radar_Sector is (Front, Rear, Left, Right);
- type Radar_Range_Zone is (Close, Medium, Far, Outside_Range);
- type Radar_Angular_Zone is (Strong, Medium, Weak, Outside_FOV);
+      type Radar_Status is (Off, On);
+      type Radar_Sector is (Front, Rear, Left, Right);
+      type Radar_Range_Zone is (Close, Medium, Far, Outside_Range);
+      type Radar_Angular_Zone is (Strong, Medium, Weak, Outside_FOV);
 
    -- Define the radar record type
    -- This record holds the details of the radar system, including its status, object detection status, distance to the object, and motion status.

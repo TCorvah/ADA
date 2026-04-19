@@ -1,5 +1,4 @@
 
-
 package Vehicle_Constants is
 
    -- Constants for vehicle types
@@ -64,7 +63,6 @@ Detection_Angle : constant Float := Angle_Sector_FOV / Float(2.0);
    ---------------------------------------
    --Radar Angle Geometry
    --------------------------------------
-
 
    -- Precomputed Sector Angles for Radar Detection using 90-degree sectors (front centered midpoint at 0 degrees)
    Front_Sector_Start : constant Float := Full_Circle_Angle - Detection_Angle; -- 315 degrees for start of front sector

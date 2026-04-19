@@ -1,10 +1,10 @@
-with Vehicle_System; use Vehicle_System;
 with Radar_Systems; use Radar_Systems;
-with Sensor_System; use Sensor_System;
+
 with Luxury_Vehicle; use Luxury_Vehicle;
 with Standard_Vehicle; use Standard_Vehicle;
 with Vehicle_Constants; use Vehicle_Constants;
 with Vehicle_Types; use Vehicle_Types;
+with Scenario_Type; use Scenario_Type;
 
 package System_Interface is
 
@@ -16,8 +16,6 @@ package System_Interface is
    -- The package is designed to be used in the main program of the vehicle project.
    
    Selected_Vehicle : Vehicle_Types.Vehicle_Type;
-  
-
 
    -- Procedure to run the system interface
    procedure Run_System_Interface( Selected_Type : in out Vehicle_Types.Vehicle_Type);
@@ -28,9 +26,8 @@ package System_Interface is
    -- Procedure to run the standard vehicle interface    
    procedure Run_Standard_Scenario( Vehicles : in out Standard_Vehicle.Standard);
 
-   -- Procedure to activate the time of day
-   procedure Activate_TOD(Time : in out Sensor_System.Sensor);
-
+   procedure Select_TOD(Scenarios : in out Scenario_Type.Scenario);
+ 
 end System_Interface;
 
 
