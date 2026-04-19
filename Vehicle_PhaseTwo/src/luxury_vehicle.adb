@@ -1,10 +1,8 @@
 with Ada.Text_IO; use Ada.Text_IO;
-with Luxury_Vehicle, Radar_Systems, Sensor_System, Vehicle_System;
+with Luxury_Vehicle, Sensor_System, Vehicle_System;
 use Vehicle_System;  use Radar_Systems;  use Sensor_System;
-with Vehicle_Types;use Vehicle_Types;
-with Road_ProfileConfig; use Road_ProfileConfig;
 with Radar_Systems; use Radar_Systems;
-with Vehicle_Types;
+
 package body  Luxury_Vehicle is
 
    -- Function to check if the door is closed         
@@ -34,7 +32,8 @@ package body  Luxury_Vehicle is
    -- the door is closed, and the seatbelt is fastened
    -- The function returns true if the vehicle is mobile, false otherwise
    -- The function checks the engine status, speed, door status, and seatbelt status
-   overriding function Vehicle_Mobile(V : Luxury_Car) return Boolean is
+   overriding 
+   function Vehicle_Mobile(V : Luxury_Car) return Boolean is
    begin
       Sensor_System.Check_Seat(V.Car_Sensor);
       return
@@ -43,7 +42,15 @@ package body  Luxury_Vehicle is
       (Get_Speed(V) > 0.0);
                 
    end Vehicle_Mobile;
-   
+
+   procedure Engine_Status_Check(S : in Sensor) is
+   begin
+      if S.Engine_Running(S) then
+         Put_Line ("Sensor: Engine is Running");
+      else
+         Put_Line ("Sensor: Engine is Stopped");
+      end if;
+   end Engine_Status_Check;
 
 
    -- Procedure to check the door status  

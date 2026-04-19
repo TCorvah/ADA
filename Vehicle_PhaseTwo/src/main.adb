@@ -3,10 +3,10 @@ with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 with Ada.Float_Text_IO; use Ada.Float_Text_IO;
 with Ada.Strings.Fixed; use Ada.Strings.Fixed;
 with Ada.Strings; use Ada.Strings;
-with Luxury_Vehicle, Standard_Vehicle, Sensor_System, Radar_Systems, Road_ProfileConfig;
 with System_Interface;
-with Vehicle_Types;
+with Vehicle_Types; use Vehicle_Types;
 with Vehicle_Reservation;
+with Scenario_Type; use Scenario_Type;
 
 
 procedure Main is

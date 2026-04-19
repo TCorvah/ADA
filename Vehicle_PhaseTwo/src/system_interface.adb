@@ -28,33 +28,31 @@ package body System_Interface is
    package Float_IO is new Ada.Text_IO.Float_IO(Float);
    
 
-   -- Procedure to activate the time of day
-   -- This procedure prompts the user for the time of day and sets the visibility accordingly.
-   -- It takes a Sensor object as an input parameter and modifies its visibility attribute.
-   -- The procedure also prints a message indicating the time of day.
-   -- The procedure is designed to be used in conjunction with the Sensor_System package.
-   procedure Activate_TOD(Time : in out Sensor_System.Sensor ) is
-      -- Declare variables
-      TOD : Integer; -- Time of day
+   -- Procedure to select the time of day
+   procedure Select_TOD(Scenarios : in out Scenario_Type.Scenario) is
    begin
-      -- Prompt the user for the time of day
-      Put_Line("=====================================");
-      Put_Line("Vehicle Project - Phase Two");
-      Put_Line("Enter the time of day: ");
-      Put_Line("1 = Night, 2 = Day");
-      Get(TOD);
-      case TOD is
-         when 1 =>
-            Time.Visibility := Night; -- Night
-            Put_Line("Time of day: Night");
-         when 2 =>
-            Time.Visibility := Day; -- Day
-            Put_Line("Time of day: Day");
-         when others =>
-            Put_Line("Invalid time of day. Please enter option 1 or 2.");
-            return;
-      end case;
-   end Activate_TOD;
+      Put_Line("Select the Time of Day: ");
+      Put_Line("1. Day");
+      Put_Line("2. Night");
+      declare
+         Time_Choice : Integer;
+      begin
+         Get(Time_Choice);
+         case Time_Choice is
+            when 1 =>
+               Scenarios.Set_Time_of_Day(Scenarios.Day);
+               Put_Line("Time of Day set to: " & Scenarios.Time_of_Day'Image(Scenarios.Get_Time_of_Day));
+            when 2 =>
+               Scenarios.Set_Time_of_Day(Scenarios.Night);
+               Put_Line("Time of Day set to: " & Scenarios.Time_of_Day'Image(Scenarios.Get_Time_of_Day));
+            when others =>
+               Put_Line("Invalid choice. Defaulting to Day.");
+               Scenarios.Set_Time_of_Day(Scenarios.Day);
+               Put_Line("Time of Day set to: " & Scenarios.Time_of_Day'Image(Scenarios.Get_Time_of_Day));
+         end case;
+      end;
+   end Select_TOD;
+
 
    -- Procedure to run the luxury vehicle interface
    procedure Run_Luxury_Scenario( Vehicles : in out Luxury_Vehicle.Luxury_Car) is
@@ -64,11 +62,9 @@ package body System_Interface is
       my_radar : Radar_Systems.Radar;
       my_sensor : Sensor_System.Sensor;
       Radar_Data : Radar_Systems.Radar_Data;
-   
       -- Random distance for object detection
       Random_Speed : Float;
       Random_Distance : Float;
- 
    begin
       Put_Line("Car Type: " & Trim(Vehicle_Type'Image(Vehicles.Lux_Model),Right));
       Put("Rental Fee: $");
@@ -78,13 +74,14 @@ package body System_Interface is
       Put("MPG: ");
       Float_IO.Put(Vehicles.miles_gallon, Fore => 1, Aft => 1, Exp => 0);
       New_Line;
+      Sensor_System.Toggle_Door(Vehicles.Car_Sensor); -- Initially, the door is open
       Sensor_System.Activate_Sensor(Vehicles.Car_Sensor);
       if Sensor_System.Seat_Occupied(Vehicles.Car_Sensor) then
          Put_Line("Seat is occupied. Seatbelt confirmation will confirm human.");
       else
          Put_Line("Seat is not occupied. Vehicle will not move.");
-         Vehicles.Speed := 0.0;
-         Vehicles.Is_Moving := False;
+         Vehicles.Set_Speed(0.0);
+         Vehicles.Vehicle_NotMobile(Vehicles);
          return;
       end if;
 
@@ -102,8 +99,9 @@ package body System_Interface is
       -- Set the seatbelt status based on user input
       case SeatBelt is
          when 1 =>
+
             Vehicles.Car_Sensor.Seatbelt_On := True; -- Seatbelt fastened
-            Vehicles.Engine_On := True; -- Engine is running
+            --Vehicles.Ser -- Engine is 
             my_sensor.Door_Open := False; -- Door is closed
 
             Put_Line("Seatbelt status: Fastened");
@@ -149,7 +147,6 @@ package body System_Interface is
                Gen : Ada.Numerics.Float_Random.Generator;
                speed_min : Float := 5.0; -- Speed of the vehicle
                speed_max : Float := 60.0; -- Speed of the vehicle
-
 
             begin
               -- Get radar data:
@@ -379,6 +376,48 @@ package body System_Interface is
       return;
    end if;
 end Run_System_Interface;
+
+ -- Function to analyze radar data and determine the appropriate radar status for detected objects and return the radar data status.
+   -- The function evaluates the distance to the detected object against predefined thresholds
+   -- based on the road profile configuration.
+   -- Depending on the distance, the function returns one of the following radar data statuses:
+   -- Emergency_Stop: If the object is too close (within minimum detection range).
+   -- Slow_Down: If the object is within the caution distance.
+   -- Caution: If the object is within the maximum detection range.
+   -- Clear_To_Move: If no objects are detected within the maximum detection range.
+
+   function Analyze_Radar_Data(Object_Distance: Float; Road_Profile : Road_ProfileConfig.Road_Profile) return Radar_Data is
+   begin
+      if Object_Distance <= Road_Profile.Min_Detection_Range then
+         return Emergency_Stop; -- Emergency stop if object is too close
+      elsif Object_Distance <= Road_Profile.Caution_Distance then
+         return Slow_Down; -- Slow down if object is detected within caution distance
+      elsif Object_Distance <= Road_Profile.Max_Detection_Range then
+         return Caution; -- Caution if object is detected within caution distance
+      else
+         return Clear_To_Move; -- Clear to move if no objects are detected
+      end if;
+   end Analyze_Radar_Data;
+
+   type Scan_Result is record
+      Angle : Float;
+      Distance : Float;
+      Sector : Radar_Sector;
+      Status : Radar_Data;
+   end record;
+
+   procedure Print_Scan_Result(Road_Profile : Road_ProfileConfig.Road_Profile; Gen : in out Generator; Result : out Scan_Result) is
+       Los_Angle : Float := Random_Angle; -- Scan across Line of Sight
+       D : Float := Random(Gen) * Road_Profile.Max_Detection_Range; --
+       begin
+          Result.Angle := Los_Angle;
+          Result.Distance := D;
+          Result.Sector := Get_Sector_Angle(A);
+          Result.Status := Analyze_Radar_Data(D, Road_Profile);
+       end Print_Scan_Result;
+
+   
+
 
  
 end System_Interface;

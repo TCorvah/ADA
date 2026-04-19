@@ -137,8 +137,7 @@ package body Standard_Vehicle is
       end if;
       Sensor_System.Check_Visibility(Standard_Car.Car_Sensor);
    
-     
-        
+      
       delay 3.0;
       Put_Line("Standard: Vehicle is in motion regardless of above warnings.");
       -- Set speed to a safe value if all conditions are met

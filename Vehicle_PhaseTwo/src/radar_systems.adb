@@ -214,10 +214,5 @@ package body Radar_Systems is
       return Data;
    end Detect_Object;
         
-
-  
-  
-
-
 end Radar_Systems;   
    
